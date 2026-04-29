@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 
-const SECRET_KEY = import.meta.env.VITE_APP_SECRET_KEY || 'inventario-fs-default-secret-key';
+const SECRET_KEY = import.meta.env.VITE_APP_SECRET_KEY || 'prestamos-default-secret-key';
 
 export const encryptString = (data, key) => {
   const str = convertToString(data);
