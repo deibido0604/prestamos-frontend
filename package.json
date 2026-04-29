@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@casl/ability": "^6.8.0",
+    "@casl/ability": "^6.8.1",
     "@casl/react": "^5.0.1",
     "@reduxjs/toolkit": "^2.11.2",
     "antd": "^6.2.0",

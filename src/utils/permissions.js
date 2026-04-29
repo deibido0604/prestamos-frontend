@@ -1,5 +1,6 @@
 export const Actions = {
   READ: "read",
+  CREATE: "create",
   UPDATE: "update",
   DELETE: "delete",
 };
@@ -7,8 +8,7 @@ export const Actions = {
 export const Subjects = {
   MAIN: "main",
   DASHBOARD: "dashboard",
-  PRODUCTS: "products",
-  BRANCH: "branch",
-  OUTBOUND: "outbound",
-  OUTBOUND_LIST: "outbound_list"
+  CLIENTES: "clientes",
+  PRESTAMOS: "prestamos",
+  ADMINISTRACION: "administracion",
 };

@@ -3,7 +3,12 @@ import { useDispatch } from "react-redux";
 import { setLogged } from "../../config/store";
 import { useApi, useLocalStorage } from "@hooks";
 import { endpoints } from "@utils";
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { AbilityBuilder } from "@casl/ability";
 import { AbilityContext } from "./AbilityContext";
@@ -33,81 +38,73 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(defaultProvider.user);
   const [initializing, setInitializing] = useState(true);
 
+  // =========================
+  // INIT AUTH
+  // =========================
   useEffect(() => {
     const initAuth = async () => {
       try {
         const storedUser = getItemWithDecryption("data");
 
         let userData = storedUser;
+
         if (typeof storedUser === "string") {
           try {
             userData = JSON.parse(storedUser);
-          } catch (parseError) {
-            console.error("Error parseando string:", parseError);
-            throw new Error("Datos corruptos");
+          } catch (e) {
+            userData = null;
           }
         }
 
-        if (userData && userData.user && userData.user.id) {
-          if (!userData.role && userData.roles) {
-            const role = setUserRoles(userData.roles);
-            userData.role = role;
-            setItemWithEncryption("data", userData);
-          }
-
+        if (userData?.user?.id) {
           setUser(userData);
           dispatch(setLogged(true));
 
-          const role = userData.role || { permissions: [] };
-          handleUpdateAbility({ permissions: role.permissions || [] });
+          handleUpdateAbility(userData.role?.permissions || []);
 
-          const currentPath = window.location.pathname;
+          const path = window.location.pathname;
 
-          if (
-            !currentPath.startsWith("/main") &&
-            !currentPath.includes("/auth/login") &&
-            !currentPath.includes("/auth/register")
-          ) {
+          if (!path.startsWith("/main")) {
             navigate("/main", { replace: true });
           }
         } else {
           const publicPaths = ["/auth/login", "/auth/register"];
-          const currentPath = window.location.pathname;
+          const path = window.location.pathname;
 
-          if (!publicPaths.includes(currentPath)) {
+          if (!publicPaths.includes(path)) {
             navigate("/auth/login", { replace: true });
           }
         }
-      } catch (error) {
-        console.error("Error crítico en initAuth:", error);
+      } catch (err) {
+        console.error("INIT AUTH ERROR:", err);
         clearStorage();
-
-        const currentPath = window.location.pathname;
-        if (!currentPath.includes("/auth/")) {
-          navigate("/auth/login", { replace: true });
-        }
+        navigate("/auth/login", { replace: true });
       } finally {
         setInitializing(false);
       }
     };
 
-    setTimeout(() => {
-      initAuth();
-    }, 100);
+    setTimeout(initAuth, 100);
   }, []);
 
-  const handleUpdateAbility = ({ permissions = [] }) => {
-    const { can, rules } = new AbilityBuilder(ability);
-    if (permissions && Array.isArray(permissions)) {
-      permissions.forEach((permission) => {
-        if (permission.action && permission.subject) {
-          can(permission.action, permission.subject);
-        }
-      });
-    }
+  // =========================
+  // CASL FIXED UPDATE
+  // =========================
+  const handleUpdateAbility = (permissions = []) => {
+    const { can, rules } = new AbilityBuilder();
+
+    permissions.forEach((p) => {
+      if (p?.action && p?.subject) {
+        can(p.action, p.subject);
+      }
+    });
+
     ability.update(rules);
   };
 
+  // =========================
+  // USER HANDLING
+  // =========================
   const handleSetUser = (data) => setUser(data);
 
   const clearStorage = () => {
@@ -116,134 +113,139 @@ const AuthProvider = ({ children }) => {
     dispatch(setLogged(false));
   };
 
+  // =========================
+  // ROLE NORMALIZER
+  // =========================
   const setUserRoles = (roles = []) => {
-    let name = "";
-    let type = "";
     let permissions = [];
 
-    if (Array.isArray(roles)) {
-      roles.forEach((role) => {
-        type += (type ? "-" : "") + (role.type || "");
-        name += (name ? "-" : "") + (role.name || "");
-        permissions = permissions.concat(role.permissions || []);
-      });
-    }
-
-    const seenIds = new Set();
-    permissions = permissions.filter((permission) => {
-      if (!permission || !permission._id) return false;
-      if (seenIds.has(permission._id)) return false;
-      seenIds.add(permission._id);
-      return true;
+    roles.forEach((role) => {
+      permissions = permissions.concat(role.permissions || []);
     });
 
-    return { type, name, permissions };
+    const unique = new Map();
+
+    permissions.forEach((p) => {
+      if (p?.action && p?.subject) {
+        unique.set(`${p.action}-${p.subject}`, p);
+      }
+    });
+
+    return {
+      permissions: Array.from(unique.values())
+    };
   };
 
-  const handleLogin = (credentials) => {
-    axios
-      .callService({ url: endpoints.authUrl.login })
-      .post(credentials)
-      .then((resp) => {
-        let { data } = resp;
-
-        if (data) {
-          if (data.active === true) {
-            const role = setUserRoles(data.roles || []);
-
-            const userData = {
-              user: {
-                id: data._id,
-                username: data.username,
-                email: data.email,
-                name: data.name,
-                lastName: data.lastName,
-                department: data.department,
-                active: data.active,
-                lastLogin: data.lastLogin,
-                createdAt: data.createdAt,
-                updatedAt: data.updatedAt,
-              },
-              token: data.token,
-              branch: data.branch,
-              role: role,
-              permissions: data.permissions || [],
-            };
-
-            setItemWithEncryption("data", userData);
-
-            handleSetUser(userData);
-            dispatch(setLogged(true));
-            handleUpdateAbility({ permissions: role.permissions || [] });
-
-            navigate("/main", { replace: true });
-          } else {
-            dispatch(
-              openNotification({
-                message: "Atención",
-                description: "Usuario inactivo",
-                placement: "bottom",
-                type: "error",
-                show: true,
-              }),
-            );
+  // =========================
+  // MOCK LOGIN (SIN BACKEND)
+  // =========================
+  const handleLogin = async ({ username, password }) => {
+    const mockUser = {
+      username: "admin",
+      password: "admin123",
+      data: {
+        _id: "1",
+        username: "admin",
+        email: "admin@prestamos.com",
+        name: "Administrador",
+        active: true,
+        roles: [
+          {
+            name: "Admin",
+            type: "admin",
+            permissions: [
+              { action: "read", subject: "main" },
+              { action: "read", subject: "dashboard" },
+              { action: "read", subject: "clientes" },
+              { action: "create", subject: "clientes" },
+              { action: "update", subject: "clientes" },
+              { action: "delete", subject: "clientes" },
+              { action: "read", subject: "prestamos" },
+              { action: "create", subject: "prestamos" },
+              { action: "update", subject: "prestamos" },
+              { action: "delete", subject: "prestamos" },
+              { action: "read", subject: "administracion" },
+              { action: "create", subject: "administracion" },
+              { action: "update", subject: "administracion" },
+              { action: "delete", subject: "administracion" }
+            ]
           }
-        } else {
-          dispatch(
-            openNotification({
-              message: "Atención",
-              description: resp.error || "Error en credenciales",
-              placement: "bottom",
-              type: "error",
-              show: true,
-            }),
-          );
-        }
-      })
-      .catch(() => {
-        dispatch(
-          openNotification({
-            message: "Atención",
-            description: "Error de autenticación",
-            placement: "bottom",
-            type: "error",
-            show: true,
-          }),
-        );
-      });
-  };
-  const handleLogout = () => {
-    axios
-      .callService({ url: endpoints.authUrl.logout })
-      .post()
-      .then(async ({ data }) => {
-        if (data) {
-          console.log(" Logout exitoso en servidor");
-        }
-      })
-      .catch((error) => {
-        console.error("Error en logout del servidor:", error);
-      })
-      .finally(() => {
-        persistor.purge();
-        dispatch(setLogged(false));
-        dispatch(resetStore());
-        clearStorage();
-        navigate("/auth/login", { replace: true });
-      });
+        ],
+        token: "fake-token"
+      }
+    };
+
+    if (
+      username === mockUser.username &&
+      password === mockUser.password
+    ) {
+      const data = mockUser.data;
+
+      const role = setUserRoles(data.roles);
+
+      const userData = {
+        user: {
+          id: data._id,
+          username: data.username,
+          email: data.email,
+          name: data.name,
+          active: data.active
+        },
+        token: data.token,
+        role,
+        permissions: role.permissions
+      };
+
+      setItemWithEncryption("data", userData);
+
+      handleSetUser(userData);
+      dispatch(setLogged(true));
+
+      handleUpdateAbility(role.permissions);
+
+      navigate("/main", { replace: true });
+    } else {
+      dispatch(
+        openNotification({
+          message: "Error",
+          description: "Credenciales incorrectas",
+          type: "error",
+          placement: "bottom",
+          show: true
+        })
+      );
+    }
   };
 
+  // =========================
+  // LOGOUT
+  // =========================
+  const handleLogout = () => {
+    persistor.purge();
+    dispatch(setLogged(false));
+    dispatch(resetStore());
+    clearStorage();
+    navigate("/auth/login", { replace: true });
+  };
+
+  // =========================
+  // PROVIDER VALUE
+  // =========================
   const values = {
     user,
     login: handleLogin,
-    logout: handleLogout,
+    logout: handleLogout
   };
 
   if (initializing) {
     return <LoadingPage />;
   }
 
-  return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={values}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export { AuthContext, AuthProvider };

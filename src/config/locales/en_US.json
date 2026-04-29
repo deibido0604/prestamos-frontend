@@ -1,21 +1,19 @@
 {
   "app.userinfo.logout": "Logout",
-  "app.role": "Rols",
+  "app.role": "Roles",
   "app.users": "Users",
   "app.dashboard": "Dashboard",
-  "app.products": "Products",
-  "app.branch": "Branch",
-  "app.outbound": "Outbound",
-  "app.add_outbound": "Check Out",
-  "app.outbound_list": "Inventory Outflow List",
 
-  "dashboard.welcome": "Welcome to Farsiman Inventory System",
+  "app.loans": "Loans",
+  "app.branch": "Branches",
+
+  "app.loans_out": "Loan Outflow",
+  "app.add_loan": "Register Loan",
+  "app.loans_list": "Loans List",
+
+  "dashboard.welcome": "Welcome to the Loans System",
   "dashboard.hello": "Hello",
-  "dashboard.time": "Your entry time is:",
+  "dashboard.time": "Your login time is:",
 
-  "button.add": "Add",
-
-  "title.branch_origen":"Origin branch"
-
-
+  "button.add": "Add"
 }

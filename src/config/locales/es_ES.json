@@ -1,20 +1,19 @@
 {
-  "app.userinfo.logout": "Salir",
+  "app.userinfo.logout": "Cerrar sesión",
   "app.role": "Roles",
   "app.users": "Usuarios",
   "app.dashboard": "Dashboard",
-  "app.products": "Productos",
-  "app.branch": "Sucursales",
-  "app.outbound": "Salidas",
-  "app.add_outbound": "Registrar Salida",
-  "app.outbound_list": "Lista de Salidas",
 
+  "app.loans": "Préstamos",
+  "app.branch": "Sucursales",
+
+  "app.loans_out": "Salida de préstamos",
+  "app.add_loan": "Registrar préstamo",
+  "app.loans_list": "Lista de préstamos",
+
+  "dashboard.welcome": "Bienvenido al Sistema de Préstamos",
   "dashboard.hello": "Hola",
-  "dashboard.welcome": "Bienvenido/a al Sistema de Inventario de Farsiman",
   "dashboard.time": "Tu hora de ingreso es:",
 
-  "button.add": "Agregar",
-
-  "title.branch_origen":"Sucursal origen"
-
+  "button.add": "Agregar"
 }

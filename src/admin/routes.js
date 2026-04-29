@@ -1,13 +1,7 @@
 import { Navigate } from "react-router-dom";
-import dashboardRoutes from "./modules/dashboard/routes";
-import productsRoutes from "./modules/products/routes";
-import branchRoutes from "./modules/branch/routes";
-import outboundRoutes from "./modules/outbound/routes"
+import childAdminRoutes from "./routes/ChildAdminRoutes";
 
 export default [
-  ...dashboardRoutes,
-  ...productsRoutes,
-  ...branchRoutes,
-  ...outboundRoutes,
+  ...childAdminRoutes,
   { path: "*", to: "dashboard", element: Navigate },
 ];

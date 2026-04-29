@@ -8,7 +8,7 @@ export const FooterComponent = () => {
         textAlign: 'center',
       }}
     >
-      {`Grupo Farsiman  ${new Date().getFullYear()}`}
+      {`Sistema de Prestamos  ${new Date().getFullYear()}`}
     </Footer>
   );
 };
