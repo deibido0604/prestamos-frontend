@@ -1,174 +1,389 @@
 @use "sass:color";
 
-$primary-color: #d1d1dd;
+$primary-color: #485bff;
 $secondary-color: #2a4b87;
-$border-radius: 15px;
+$accent-color: #00d4ff;
+$danger: #ff4d4f;
+$success: #52c41a;
+$warning: #faad14;
+$text-dark: #333333;
+$text-light: #ffffff;
+$light-bg: #f8f9ff;
+$border-radius: 12px;
 
-/* 🔹 WRAPPER */
-.wraper {
+// ==================== LOGIN WRAPPER ====================
+.login-wrapper {
   min-height: 100vh;
   width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  background: linear-gradient(
-    135deg,
-    color.scale($secondary-color, $lightness: 10%) 0%,
-    #ffffff 100%
-  );
-}
-
-/* 🔹 CONTAINER */
-.login-container {
-  background: #fff;
-  width: 70%;
-  max-width: 1000px;
-  min-height: 500px;
-  display: flex;
-  border-radius: $border-radius;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 40px 4px;
-  overflow: hidden;
-
-  @media (max-width: 1024px) {
-    width: 85%;
-  }
-
+  background: linear-gradient(135deg, #485bff 0%, #2a4b87 100%);
+  
   @media (max-width: 768px) {
-    width: 95%;
     flex-direction: column;
   }
 }
 
-/* 🔹 IMAGE SIDE */
-.image-login {
+// ==================== LEFT PANEL ====================
+.login-left-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
   position: relative;
-  width: 60%;
-  background: linear-gradient(
-    135deg,
-    color.scale($secondary-color, $lightness: 5%) 0%,
-    $secondary-color 100%
-  );
-
-  .product_name {
-    font-weight: 700;
-    font-size: 28px;
-    color: #ffffff;
-    margin: 25px;
-  }
-
-.brand-icon {
-  position: absolute;
-  width: 70%;
-  max-width: 280px;
-  bottom: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  object-fit: contain;
-
-  @media (max-width: 1024px) {
-    width: 65%;
-    bottom: 50px;
-  }
-
+  
   @media (max-width: 768px) {
-    position: relative;
-    width: 60%;
-    max-width: 180px;
-    margin: 0 auto;
-    display: block;
-    bottom: auto;
-    left: auto;
-    transform: none;
+    min-height: 300px;
+    padding: 30px 20px;
   }
 
-  @media (max-width: 480px) {
-    width: 55%;
-    max-width: 140px;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
   }
 }
 
-  @media (max-width: 768px) {
-    width: 100%;
-    height: 180px;
+.login-left-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: $text-light;
+  max-width: 500px;
 
-    .brand-icon {
-      position: relative;
-      width: 40%;
-      margin: 10px auto;
-      display: block;
-      transform: none;
+  .login-logo-container {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    
+    @media (max-width: 768px) {
+      margin-bottom: 20px;
+    }
+
+    .login-logo {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+      animation: float 3s ease-in-out infinite;
+      
+      @media (max-width: 768px) {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  }
+
+  .login-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: $text-light;
+    letter-spacing: -0.5px;
+    
+    @media (max-width: 768px) {
+      font-size: 28px;
+    }
+  }
+
+  .login-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 40px;
+    line-height: 1.5;
+    
+    @media (max-width: 768px) {
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+  }
+
+  .login-features {
+    margin-bottom: 40px;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 24px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    @media (max-width: 768px) {
+      display: none;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 14px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .feature-icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background: $accent-color;
+        color: $text-dark;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 24px;
+        margin-right: 12px;
+        font-weight: 700;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .login-credentials {
+    background: rgba(0, 212, 255, 0.15);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    text-align: left;
+    
+    @media (max-width: 768px) {
+      display: none;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      color: $accent-color;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .credential-item {
+      font-size: 13px;
+      margin: 6px 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-family: 'Monaco', 'Courier New', monospace;
+
+      code {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 2px 8px;
+        border-radius: 4px;
+        color: $accent-color;
+        font-weight: 500;
+      }
     }
   }
 }
 
-/* 🔹 FORM SIDE */
-.form-container {
-  width: 40%;
+// ==================== RIGHT PANEL ====================
+.login-right-panel {
+  flex: 1;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 30px;
-
-  .login-text {
-    font-size: 22px;
-    color: $secondary-color;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-
+  padding: 40px 20px;
+  background: $text-light;
+  
   @media (max-width: 768px) {
-    width: 100%;
-    padding: 20px;
+    padding: 30px 20px;
+    min-height: auto;
   }
 }
 
-.form-container .ant-form {
+.login-form-container {
   width: 100%;
-  max-width: 320px;
-  margin: auto;
+  max-width: 400px;
+
+  .login-form-header {
+    margin-bottom: 32px;
+    text-align: center;
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: $secondary-color;
+      margin: 0 0 8px 0;
+      
+      @media (max-width: 768px) {
+        font-size: 24px;
+      }
+    }
+
+    p {
+      font-size: 14px;
+      color: #999;
+      margin: 0;
+    }
+  }
+
+  .login-form {
+    :global(.ant-form-item) {
+      margin-bottom: 20px;
+    }
+
+    :global(.ant-form-item:last-child) {
+      margin-bottom: 0;
+    }
+  }
+
+  .login-footer {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #f0f0f0;
+
+    p {
+      font-size: 12px;
+      color: #999;
+      margin: 0;
+    }
+  }
 }
 
-/* 🔹 INPUT */
+// ==================== INPUTS ====================
 .login-input {
   &.ant-input,
   &.ant-input-affix-wrapper {
     height: 50px;
-    background-color: $primary-color;
-    border-radius: 10px;
-    border: 1px solid color.scale($primary-color, $lightness: -10%);
+    border-radius: $border-radius !important;
+    border: 1px solid #e8e8e8 !important;
+    background: #fafafa !important;
+    font-size: 14px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: $primary-color !important;
+      background: #f5f5f5 !important;
+    }
 
     &:focus,
     &.ant-input-affix-wrapper-focused {
-      border-color: $secondary-color !important;
-      box-shadow: 0 0 0 2px rgba($secondary-color, 0.2) !important;
+      border-color: $primary-color !important;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1) !important;
+      background: $text-light !important;
+    }
+
+    .login-icon {
+      color: $primary-color;
+      font-size: 16px;
     }
   }
 }
 
-/* 🔹 BUTTON */
+// ==================== BUTTON ====================
 .login-button {
   &.ant-btn {
     height: 50px;
     font-weight: 600;
-    border-radius: 12px;
-    background-color: $secondary-color;
-    border-color: $secondary-color;
+    border-radius: $border-radius;
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+    border: none;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba($primary-color, 0.2);
 
-    &:hover {
-      background-color: color.scale($secondary-color, $lightness: 10%);
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba($primary-color, 0.3);
+      background: linear-gradient(135deg, #3d4ae6 0%, #1f3f67 100%);
     }
 
     &:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
     }
   }
 }
 
-/* 🔹 MOBILE FIX SCROLL */
-@media (max-height: 600px) {
-  .wraper {
-    align-items: flex-start;
-    padding-top: 20px;
+// ==================== ANIMATIONS ====================
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// ==================== RESPONSIVE ====================
+@media (max-width: 1024px) {
+  .login-left-panel {
+    padding: 30px 20px;
+  }
+
+  .login-form-container {
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+  }
+
+  .login-left-panel {
+    order: 2;
+    padding: 20px;
+    min-height: auto;
+  }
+
+  .login-right-panel {
+    order: 1;
+    padding: 20px;
+  }
+
+  .login-form-container {
+    max-width: 100%;
+
+    .login-form-header h2 {
+      font-size: 22px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .login-wrapper {
+    padding: 0;
+  }
+
+  .login-left-panel,
+  .login-right-panel {
+    padding: 20px 16px;
+  }
+
+  .login-form-container {
+    .login-form-header {
+      margin-bottom: 24px;
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .login-input {
+    &.ant-input,
+    &.ant-input-affix-wrapper {
+      height: 44px;
+      font-size: 13px;
+    }
+  }
+
+  .login-button {
+    &.ant-btn {
+      height: 44px;
+      font-size: 14px;
+    }
   }
 }

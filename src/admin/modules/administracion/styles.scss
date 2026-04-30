@@ -1,0 +1,57 @@
+$primary-color: #485bff;
+$secondary-color: #2a4b87;
+$text-dark: #333333;
+$text-light: #ffffff;
+$light-bg: #f8f9ff;
+$danger: #ff4d4f;
+$success: #52c41a;
+
+.admin-page {
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: $secondary-color;
+      margin: 0;
+      
+      @media (max-width: 768px) {
+        font-size: 24px;
+      }
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #999;
+      margin: 4px 0 0 0;
+    }
+
+    button {
+      white-space: nowrap;
+      
+      @media (max-width: 576px) {
+        width: 100%;
+      }
+    }
+  }
+
+  .usuarios-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+
+    :global(.ant-table) {
+      font-size: 14px;
+    }
+
+    :global(.ant-table-row:hover) {
+      background: $light-bg;
+    }
+  }
+}
