@@ -138,56 +138,7 @@ const LoginPage = () => {
     <div className="login-wrapper">
       <Notification />
       
-      {/* Lado izquierdo - Información */}
-      <div className="login-left-panel">
-        <div className="login-left-content">
-          <div className="login-logo-container">
-            <img
-              src="/img/brand_icon_halftone-02.png"
-              alt="Brand"
-              className="login-logo"
-              onError={(e) => (e.target.style.display = "none")}
-            />
-          </div>
-
-          <h1 className="login-title">Sistema de Gestión de Préstamos</h1>
-          
-          <p className="login-subtitle">
-            Control completo de préstamos, clientes y usuarios
-          </p>
-
-          <div className="login-features">
-            <div className="feature-item">
-              <span className="feature-icon">✓</span>
-              <span>Gestión de préstamos en LPS</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">✓</span>
-              <span>Control de clientes</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">✓</span>
-              <span>Administración de usuarios</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">✓</span>
-              <span>Cálculo automático de intereses</span>
-            </div>
-          </div>
-
-          <div className="login-credentials">
-            <h3>Credenciales de Demo</h3>
-            <p className="credential-item">
-              <strong>Usuario:</strong> <code>admin</code>
-            </p>
-            <p className="credential-item">
-              <strong>Contraseña:</strong> <code>admin123</code>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Lado derecho - Formulario */}
+      {/* Lado derecho (ahora primero) - Formulario */}
       <div className="login-right-panel">
         <div className="login-form-container">
           <div className="login-form-header">
@@ -244,6 +195,55 @@ const LoginPage = () => {
 
           <div className="login-footer">
             <p>© 2024 Sistema de Prestamos. Todos los derechos reservados.</p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Lado izquierdo (ahora al final) - Información */}
+      <div className="login-left-panel">
+        <div className="login-left-content">
+          <div className="login-logo-container">
+            <img
+              src="/img/brand_icon_halftone-02.png"
+              alt="Brand"
+              className="login-logo"
+              onError={(e) => (e.target.style.display = "none")}
+            />
+          </div>
+
+          <h1 className="login-title">Sistema de Gestión de Préstamos</h1>
+          
+          <p className="login-subtitle">
+            Control completo de préstamos, clientes y usuarios
+          </p>
+
+          <div className="login-features">
+            <div className="feature-item">
+              <span className="feature-icon">✓</span>
+              <span>Gestión de préstamos en LPS</span>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">✓</span>
+              <span>Control de clientes</span>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">✓</span>
+              <span>Administración de usuarios</span>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">✓</span>
+              <span>Cálculo automático de intereses</span>
+            </div>
+          </div>
+
+          <div className="login-credentials">
+            <h3>Credenciales de Demo</h3>
+            <p className="credential-item">
+              <strong>Usuario:</strong> <code>admin</code>
+            </p>
+            <p className="credential-item">
+              <strong>Contraseña:</strong> <code>admin123</code>
+            </p>
           </div>
         </div>
       </div>

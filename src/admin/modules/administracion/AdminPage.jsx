@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { CardContent } from "../../../ui/index";
+import { CardContent } from "../../../admin/components";
 import { UsuariosForm } from "./components/UsuariosForm";
 import { UsuariosList } from "./components/UsuariosList";
 import { addUsuario, updateUsuario, deleteUsuario } from "./store/usuariosSlice";

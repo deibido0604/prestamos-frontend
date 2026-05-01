@@ -7,67 +7,257 @@ $danger: #ff4d4f;
 $success: #52c41a;
 
 .clientes-page {
+  padding: 0;
+  width: 100%;
+
   .clientes-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
+    align-items: flex-start;
+    margin-bottom: 24px;
     flex-wrap: wrap;
     gap: 16px;
+    flex-direction: row;
+
+    > div:first-child {
+      flex: 1;
+      min-width: 200px;
+    }
 
     h1 {
       font-size: 28px;
       font-weight: 700;
       color: $secondary-color;
-      margin: 0;
+      margin: 0 0 8px 0;
       
       @media (max-width: 768px) {
         font-size: 24px;
+        margin-bottom: 4px;
+      }
+
+      @media (max-width: 576px) {
+        font-size: 20px;
+        margin-bottom: 2px;
       }
     }
 
     .subtitle {
       font-size: 14px;
       color: #999;
-      margin: 4px 0 0 0;
+      margin: 0;
+
+      @media (max-width: 576px) {
+        font-size: 12px;
+      }
     }
 
     :global(.ant-space) {
-      flex-wrap: wrap;
+      display: flex;
+      gap: 12px;
+      width: auto;
+      flex-wrap: nowrap;
       
+      @media (max-width: 768px) {
+        width: 100%;
+        flex-wrap: wrap;
+        
+        :global(.ant-input-search) {
+          flex: 1;
+          min-width: 200px;
+        }
+        
+        button {
+          white-space: nowrap;
+        }
+      }
+
       @media (max-width: 576px) {
+        flex-direction: column;
         width: 100%;
         
         :global(.ant-input-search) {
           width: 100%;
+          min-width: unset;
         }
         
         button {
+          width: 100%;
+        }
+
+        :global(.ant-input-group) {
           width: 100%;
         }
       }
     }
   }
 
+  .clientes-list {
+    width: 100%;
+  }
+
+  .desktop-view {
+    display: block;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  .mobile-view {
+    display: none;
+
+    @media (max-width: 768px) {
+      display: block;
+    }
+  }
+
+  .clientes-content {
+    width: 100%;
+    overflow-x: auto;
+  }
+
   .clientes-table {
     background: white;
     border-radius: 8px;
-    overflow: hidden;
-    margin-top: 24px;
+    overflow-x: auto;
+    overflow-y: visible;
+    margin-top: 0;
+    width: 100%;
 
     :global(.ant-table) {
       font-size: 14px;
+      width: 100%;
     }
 
     :global(.ant-table-row:hover) {
       background: $light-bg;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       :global(.ant-table-cell) {
-        padding: 12px 8px;
+        padding: 12px;
         font-size: 13px;
       }
+    }
+
+    @media (max-width: 768px) {
+      :global(.ant-table-cell) {
+        padding: 10px 8px;
+        font-size: 12px;
+      }
+
+      :global(.ant-table-cell-fix-left-last)::after,
+      :global(.ant-table-cell-fix-right-first)::before {
+        content: none !important;
+      }
+    }
+
+    @media (max-width: 576px) {
+      :global(.ant-table) {
+        font-size: 11px;
+      }
+
+      :global(.ant-table-cell) {
+        padding: 8px 6px;
+        font-size: 11px;
+      }
+
+      :global(.ant-btn-sm) {
+        height: 28px;
+        padding: 0 8px;
+        font-size: 11px;
+      }
+
+      :global(.ant-btn-group) {
+        gap: 2px;
+
+        :global(.ant-btn) {
+          height: 28px;
+          padding: 0 6px;
+        }
+      }
+    }
+  }
+
+  // Card styles para móvil
+  .cliente-card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    height: 100%;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .card-content {
+      padding: 0;
+
+      h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: $secondary-color;
+        margin: 0 0 12px 0;
+        word-break: break-word;
+      }
+
+      .card-label {
+        font-size: 12px;
+        color: #666;
+        margin: 6px 0;
+        line-height: 1.4;
+        word-break: break-word;
+
+        strong {
+          color: $text-dark;
+          font-weight: 500;
+        }
+      }
+
+      .card-footer {
+        margin: 12px 0 8px 0;
+        padding-top: 8px;
+        border-top: 1px solid #f0f0f0;
+      }
+
+      .card-actions {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+
+        :global(.ant-btn) {
+          flex: 1;
+          height: 32px;
+          font-size: 12px;
+          padding: 0 8px;
+        }
+
+        :global(.ant-btn-primary) {
+          background: $primary-color;
+          border-color: $primary-color;
+        }
+
+        :global(.ant-btn-dangerous) {
+          color: $danger;
+          border-color: $danger;
+        }
+      }
+    }
+
+    :global(.ant-card-body) {
+      padding: 12px;
+    }
+  }
+
+  .pagination-wrapper {
+    margin-top: 20px;
+    text-align: center;
+
+    :global(.ant-pagination) {
+      justify-content: center;
     }
   }
 }

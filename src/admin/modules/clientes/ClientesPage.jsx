@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal, Input, Space } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { CardContent } from "../../../admin/components";
 import { ClientesForm } from "./components/ClientesForm";
 import { ClientesList } from "./components/ClientesList";
 import { addCliente, updateCliente, deleteCliente } from "./store/clientesSlice";
@@ -58,7 +59,7 @@ const ClientesPage = () => {
   };
 
   return (
-    <div className="clientes-page">
+    <CardContent className="clientes-page">
       <div className="clientes-header">
         <div>
           <h1>Gestión de Clientes</h1>
@@ -83,13 +84,11 @@ const ClientesPage = () => {
         </Space>
       </div>
 
-      <div className="clientes-content">
-        <ClientesList
-          clientes={filteredClientes}
-          onEdit={handleEditCliente}
-          onDelete={handleDeleteCliente}
-        />
-      </div>
+      <ClientesList
+        clientes={filteredClientes}
+        onEdit={handleEditCliente}
+        onDelete={handleDeleteCliente}
+      />
 
       <Modal
         title={editingCliente ? "Editar Cliente" : "Nuevo Cliente"}
@@ -104,7 +103,7 @@ const ClientesPage = () => {
           onCancel={handleModalClose}
         />
       </Modal>
-    </div>
+    </CardContent>
   );
 };
 

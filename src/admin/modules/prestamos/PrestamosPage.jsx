@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal, Input, Space } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { CardContent } from "../../../ui/index";
+import { CardContent } from "../../../admin/components";
 import { PrestamosForm } from "./components/PrestamosForm";
 import { PrestamosList } from "./components/PrestamosList";
 import { addPrestamo, updatePrestamo, deletePrestamo } from "./store/prestamosSlice";
