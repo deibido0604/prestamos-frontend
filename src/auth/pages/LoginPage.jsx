@@ -108,7 +108,7 @@ import { Button, Form, Input } from "antd";
 import { useContext, useState } from "react";
 import "../styles.scss";
 import { AuthContext } from "../../admin/context";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { UserOutlined, LockOutlined, DollarOutlined } from "@ant-design/icons";
 import { Notification } from "@components";
 
 const LoginPage = () => {
@@ -138,12 +138,55 @@ const LoginPage = () => {
     <div className="login-wrapper">
       <Notification />
       
-      {/* Lado derecho (ahora primero) - Formulario */}
+      {/* Elementos decorativos de fondo */}
+      <div className="login-bg-decor">
+        <div className="decor-circle decor-1"></div>
+        <div className="decor-circle decor-2"></div>
+        <div className="decor-circle decor-3"></div>
+      </div>
+
+      {/* Panel izquierdo - Branding */}
+      <div className="login-left-panel">
+        <div className="login-left-content">
+          <div className="login-logo-container">
+            <div className="login-logo-icon">
+              <DollarOutlined />
+            </div>
+          </div>
+
+          <h1 className="login-title">LoanPro</h1>
+          <p className="login-subtitle">
+            Gestión inteligente de préstamos y financiamientos
+          </p>
+
+          {/* Caja de información con características */}
+          <div className="login-info-box">
+            <div className="info-item">
+              <span className="info-icon">👥</span>
+              <p>Gestión de clientes</p>
+            </div>
+            <div className="info-item">
+              <span className="info-icon">📊</span>
+              <p>Análisis de créditos</p>
+            </div>
+            <div className="info-item">
+              <span className="info-icon">📈</span>
+              <p>Cálculo automático</p>
+            </div>
+            <div className="info-item">
+              <span className="info-icon">🔔</span>
+              <p>Alertas inteligentes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Panel derecho - Formulario de login */}
       <div className="login-right-panel">
         <div className="login-form-container">
           <div className="login-form-header">
             <h2>Bienvenido</h2>
-            <p>Inicia sesión para continuar</p>
+            <p>Inicia sesión para acceder a tu cuenta</p>
           </div>
 
           <Form
@@ -155,7 +198,7 @@ const LoginPage = () => {
           >
             <Form.Item
               name="username"
-              rules={[{ required: true, message: "Ingrese su usuario" }]}
+              rules={[{ required: true, message: "Por favor ingresa tu usuario" }]}
             >
               <Input
                 className="login-input"
@@ -167,7 +210,7 @@ const LoginPage = () => {
 
             <Form.Item
               name="password"
-              rules={[{ required: true, message: "Ingrese su contraseña" }]}
+              rules={[{ required: true, message: "Por favor ingresa tu contraseña" }]}
             >
               <Input.Password
                 className="login-input"
@@ -177,7 +220,15 @@ const LoginPage = () => {
               />
             </Form.Item>
 
-            <Form.Item>
+            {/* Información de demo */}
+            <div className="login-demo-info">
+              <p>
+                <strong>Demo:</strong> Usuario: <code>admin</code> | Contraseña: <code>admin123</code>
+              </p>
+            </div>
+
+            {/* Botón de login */}
+            <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
               <Button
                 className="login-button"
                 type="primary"
@@ -188,62 +239,14 @@ const LoginPage = () => {
                 loading={loading}
                 block
               >
-                {loading ? "Autenticando..." : "Entrar"}
+                {loading ? "Autenticando..." : "Iniciar Sesión"}
               </Button>
             </Form.Item>
           </Form>
 
+          {/* Footer */}
           <div className="login-footer">
-            <p>© 2024 Sistema de Prestamos. Todos los derechos reservados.</p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Lado izquierdo (ahora al final) - Información */}
-      <div className="login-left-panel">
-        <div className="login-left-content">
-          <div className="login-logo-container">
-            <img
-              src="/img/brand_icon_halftone-02.png"
-              alt="Brand"
-              className="login-logo"
-              onError={(e) => (e.target.style.display = "none")}
-            />
-          </div>
-
-          <h1 className="login-title">Sistema de Gestión de Préstamos</h1>
-          
-          <p className="login-subtitle">
-            Control completo de préstamos, clientes y usuarios
-          </p>
-
-          <div className="login-features">
-            <div className="feature-item">
-              <span className="feature-icon">✓</span>
-              <span>Gestión de préstamos en LPS</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">✓</span>
-              <span>Control de clientes</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">✓</span>
-              <span>Administración de usuarios</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">✓</span>
-              <span>Cálculo automático de intereses</span>
-            </div>
-          </div>
-
-          <div className="login-credentials">
-            <h3>Credenciales de Demo</h3>
-            <p className="credential-item">
-              <strong>Usuario:</strong> <code>admin</code>
-            </p>
-            <p className="credential-item">
-              <strong>Contraseña:</strong> <code>admin123</code>
-            </p>
+            <p>© 2024 Sistema de Control de Préstamos</p>
           </div>
         </div>
       </div>

@@ -5,6 +5,28 @@ $text-dark: #333333;
 $text-light: #ffffff;
 $border-color: #e6f7ff;
 
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  animation: fadeIn 0.3s ease-out;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .sidenav {
   min-height: 100vh;
   background: linear-gradient(180deg, $light-blue 0%, #ffffff 100%) !important;

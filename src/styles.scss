@@ -1,14 +1,21 @@
 @use "sass:color";
 
-$primary-blue: #485bff;
-$secondary-blue: #2a4b87;
+// PALETA DE COLORES MODERNA
+$primary-color: #485bff;
+$secondary-color: #2a4b87;
+$accent-color: #00d4ff;
 $light-blue: #d0e7ff;
-$success-green: #59c100;
-$error-red: #f5222d;
-$warning-orange: #f2aa52;
-$dark-text: #000000;
-$light-bg: #f2aa5211;
+$success-green: #52c41a;
+$error-red: #ff4d4f;
+$warning-orange: #faad14;
+$info-blue: #1890ff;
+$dark-text: #333333;
+$light-bg: #f8f9ff;
 $white: #ffffff;
+
+// ALIAS PARA COMPATIBILIDAD
+$primary-blue: $primary-color;
+$secondary-blue: $secondary-color;
 
 html,
 body {
