@@ -28,8 +28,29 @@ export const PrestamosForm = ({ prestamo, onSave, onCancel }) => {
         interesTotal: parseFloat(interesTotal.toFixed(2)),
         montoMensual: parseFloat(montoMensual.toFixed(2)),
       });
+    } else {
+      // Si falta algún dato, reseteamos los cálculos
+      setCalculos({ interesTotal: 0, montoMensual: 0 });
     }
   };
+
+  // ========== NUEVO: Inicializar cálculos cuando se edita ==========
+  useEffect(() => {
+    if (prestamo) {
+      // Si el préstamo trae valores guardados, los mostramos en los campos deshabilitados
+      setCalculos({
+        interesTotal: prestamo.interesTotal || 0,
+        montoMensual: prestamo.montoMensual || 0,
+      });
+      // También forzamos recalcular para asegurar consistencia (por si cambia la fórmula)
+      const { montoLps, tasaInteres, plazoMeses } = prestamo;
+      if (montoLps && tasaInteres && plazoMeses) {
+        calcularInteres({ montoLps, tasaInteres, plazoMeses });
+      }
+    } else {
+      setCalculos({ interesTotal: 0, montoMensual: 0 });
+    }
+  }, [prestamo]); // Se ejecuta cada vez que cambia el préstamo (al abrir edición)
 
   const onFinish = async (values) => {
     try {
@@ -38,7 +59,7 @@ export const PrestamosForm = ({ prestamo, onSave, onCancel }) => {
       const datosCompletos = {
         ...values,
         cliente: clienteSeleccionado?.nombreCompleto,
-        ...calculos,
+        ...calculos, // Aquí ya están los cálculos actualizados
       };
       onSave(datosCompletos);
       message.success(prestamo ? "Préstamo actualizado" : "Préstamo creado");
@@ -57,6 +78,7 @@ export const PrestamosForm = ({ prestamo, onSave, onCancel }) => {
       onFinish={onFinish}
       onValuesChange={calcularInteres}
     >
+      {/* ... el resto del formulario se mantiene igual ... */}
       <Form.Item
         label="Cliente"
         name="clienteId"

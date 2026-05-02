@@ -1,4 +1,4 @@
-import { Form, Input, Button, Select, Space, message } from "antd";
+import { Form, Input, Button, Select, Space, message, Row, Col } from "antd";
 import { useState } from "react";
 
 const estados = [
@@ -56,13 +56,26 @@ export const ClientesForm = ({ cliente, onSave, onCancel }) => {
         <Input placeholder="cliente@email.com" />
       </Form.Item>
 
-      <Form.Item
-        label="Teléfono"
-        name="telefono"
-        rules={[{ required: true, message: "Ingrese el teléfono" }]}
-      >
-        <Input placeholder="9876543210" />
-      </Form.Item>
+      <Row gutter={16}>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Teléfono Principal"
+            name="telefono"
+            rules={[{ required: true, message: "Ingrese el teléfono" }]}
+          >
+            <Input placeholder="9876543210" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Teléfono Secundario (opcional)"
+            name="telefonoSecundario"
+            rules={[]} // No es requerido
+          >
+            <Input placeholder="9876543211" />
+          </Form.Item>
+        </Col>
+      </Row>
 
       <Form.Item
         label="Dirección"
@@ -72,13 +85,26 @@ export const ClientesForm = ({ cliente, onSave, onCancel }) => {
         <Input.TextArea placeholder="Calle 5, Apartado 123" rows={2} />
       </Form.Item>
 
-      <Form.Item
-        label="Profesión/Ocupación"
-        name="profesion"
-        rules={[{ required: true, message: "Ingrese la profesión" }]}
-      >
-        <Input placeholder="Ingeniero" />
-      </Form.Item>
+      <Row gutter={16}>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Profesión/Ocupación"
+            name="profesion"
+            rules={[{ required: true, message: "Ingrese la profesión" }]}
+          >
+            <Input placeholder="Ingeniero" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Lugar de Trabajo"
+            name="lugarTrabajo"
+            rules={[{ required: true, message: "Ingrese el lugar de trabajo" }]}
+          >
+            <Input placeholder="Empresa ABC" />
+          </Form.Item>
+        </Col>
+      </Row>
 
       <Form.Item
         label="Referencias"
