@@ -77,18 +77,14 @@ $border-radius: 12px;
   align-items: flex-start;
   margin-bottom: 32px;
   flex-wrap: wrap;
-  gap: 12px;
-  flex-direction: row;
+  gap: 16px;
   animation: slideInDown 0.6s ease-out;
   width: 100%;
   box-sizing: border-box;
 
-  @media (max-width: 768px) {
-    gap: 8px;
-  }
-
-  @media (max-width: 576px) {
-    gap: 6px;
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    gap: 16px;
   }
 
   > div:first-child {
@@ -126,43 +122,45 @@ $border-radius: 12px;
     }
   }
 
-  :global(.ant-space) {
+  // ========== CONTENEDOR DE ACCIONES (buscador + botón) ==========
+  .header-actions {
     display: flex;
     gap: 12px;
-    width: auto;
+    align-items: center;
     flex-wrap: nowrap;
-    
-    :global(.ant-input),
-    :global(.ant-input-search) {
-      max-width: 250px;
-    }
-    
+
     @media (max-width: 768px) {
       flex-direction: column;
       width: 100%;
-      gap: 8px;
-      
-      :global(.ant-input),
-      :global(.ant-input-search) {
-        width: 100%;
-      }
-      
-      :global(.ant-btn) {
+      gap: 12px;
+    }
+
+    .search-input {
+      width: 250px;
+      transition: all 0.3s ease;
+
+      @media (max-width: 768px) {
         width: 100%;
       }
     }
-  }
 
-  :global(.ant-btn-primary) {
-    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-    border: none;
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba($primary-color, 0.25);
-    transition: all 0.3s ease;
+    .add-button {
+      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+      border: none;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba($primary-color, 0.25);
+      transition: all 0.3s ease;
+      white-space: nowrap;
 
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba($primary-color, 0.35);
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba($primary-color, 0.35);
+      }
+
+      @media (max-width: 768px) {
+        width: 100%;
+        white-space: normal;
+      }
     }
   }
 }
@@ -486,81 +484,6 @@ $border-radius: 12px;
         box-shadow: 0 0 0 4px rgba($primary-color, 0.12) !important;
         background: $text-light !important;
       }
-    }
-  }
-}
-
-// ==================== RESPONSIVE ====================
-@media (max-width: 1024px) {
-  .prestamos-header {
-    flex-direction: column;
-    gap: 16px;
-
-    > div:first-child {
-      width: 100%;
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .prestamos-page {
-    padding: 16px;
-  }
-
-  .prestamos-header {
-    margin-bottom: 24px;
-    gap: 12px;
-
-    h1 {
-      font-size: 24px;
-    }
-  }
-}
-
-@media (max-width: 576px) {
-  .prestamos-page {
-    padding: 12px;
-  }
-
-  .prestamos-header {
-    margin-bottom: 16px;
-    gap: 8px;
-
-    h1 {
-      font-size: 20px;
-    }
-
-    .subtitle {
-      font-size: 11px;
-    }
-  }
-
-  .prestamo-card {
-    padding: 16px;
-
-    .card-header {
-      margin-bottom: 12px;
-      padding-bottom: 10px;
-
-      .card-avatar {
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
-        margin-right: 10px;
-      }
-
-      .card-title h3 {
-        font-size: 14px;
-      }
-    }
-
-    .card-content .content-row {
-      font-size: 12px;
-    }
-
-    .card-actions button {
-      height: 28px;
-      font-size: 11px;
     }
   }
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Modal, Input, Space } from "antd";
+import { Button, Modal, Input } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { CardContent } from "../../../admin/components";
 import { ClientesForm } from "./components/ClientesForm";
@@ -65,23 +65,24 @@ const ClientesPage = () => {
           <h1>Gestión de Clientes</h1>
           <p className="subtitle">Administra todos tus clientes</p>
         </div>
-        <Space>
+        <div className="header-actions">
           <Input
             placeholder="Buscar cliente..."
             prefix={<SearchOutlined />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 250 }}
+            className="search-input"
           />
           <Button
             type="primary"
             size="large"
             icon={<PlusOutlined />}
             onClick={handleAddCliente}
+            className="add-button"
           >
             Nuevo Cliente
           </Button>
-        </Space>
+        </div>
       </div>
 
       <ClientesList

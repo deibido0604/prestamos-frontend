@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Modal, Input, Space } from "antd";
+import { Button, Modal, Input } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { CardContent } from "../../../admin/components";
 import { PrestamosForm } from "./components/PrestamosForm";
@@ -64,23 +64,24 @@ const PrestamosPage = () => {
           <h1>Gestión de Préstamos</h1>
           <p className="subtitle">Administra todos tus préstamos en LPS</p>
         </div>
-        <Space>
+        <div className="header-actions">
           <Input
             placeholder="Buscar préstamo..."
             prefix={<SearchOutlined />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: 250 }}
+            className="search-input"
           />
           <Button
             type="primary"
             size="large"
             icon={<PlusOutlined />}
             onClick={handleAddPrestamo}
+            className="add-button"
           >
             Nuevo Préstamo
           </Button>
-        </Space>
+        </div>
       </div>
 
       <PrestamosList
