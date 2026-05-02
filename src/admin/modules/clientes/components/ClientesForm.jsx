@@ -1,4 +1,4 @@
-import { Form, Input, Button, Select, Space, message, Row, Col } from "antd";
+import { Form, Input, Button, Select, Space, message, Row, Col, InputNumber } from "antd";
 import { useState } from "react";
 
 const estados = [
@@ -70,7 +70,7 @@ export const ClientesForm = ({ cliente, onSave, onCancel }) => {
           <Form.Item
             label="Teléfono Secundario (opcional)"
             name="telefonoSecundario"
-            rules={[]} // No es requerido
+            rules={[]}
           >
             <Input placeholder="9876543211" />
           </Form.Item>
@@ -86,7 +86,7 @@ export const ClientesForm = ({ cliente, onSave, onCancel }) => {
       </Form.Item>
 
       <Row gutter={16}>
-        <Col xs={24} sm={12}>
+        <Col xs={24} sm={8}>
           <Form.Item
             label="Profesión/Ocupación"
             name="profesion"
@@ -95,13 +95,27 @@ export const ClientesForm = ({ cliente, onSave, onCancel }) => {
             <Input placeholder="Ingeniero" />
           </Form.Item>
         </Col>
-        <Col xs={24} sm={12}>
+        <Col xs={24} sm={8}>
           <Form.Item
             label="Lugar de Trabajo"
             name="lugarTrabajo"
             rules={[{ required: true, message: "Ingrese el lugar de trabajo" }]}
           >
             <Input placeholder="Empresa ABC" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Form.Item
+            label="Antigüedad (años)"
+            name="antiguedad"
+            rules={[]} 
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              placeholder="5"
+              min={0}
+              step={1}
+            />
           </Form.Item>
         </Col>
       </Row>
