@@ -478,3 +478,18 @@ a {
     border-radius: 0 !important;
   }
 }
+
+// ==================== PREVENIR ZOOM EN INPUTS MÓVILES ====================
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select,
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-input-number-input,
+  .ant-select-selector,
+  .ant-picker {
+    font-size: 16px !important;    // Fuerza tamaño mínimo para evitar zoom
+    touch-action: manipulation;     // Evita doble toque/zoom en algunos navegadores
+  }
+}
