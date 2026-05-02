@@ -76,15 +76,12 @@ export const PrestamosForm = ({ prestamo, onSave, onCancel }) => {
     }
   };
 
-  // Recalcular cada vez que cambian los valores del formulario
   const onValuesChange = (changedValues, allValues) => {
     recalcularTodo(allValues);
   };
 
-  // Inicializar cálculos cuando se edita un préstamo existente
   useEffect(() => {
     if (prestamo) {
-      // Si el préstamo ya tiene valores guardados, los usamos para mostrarlos
       const valoresIniciales = {
         ...prestamo,
         fechaInicio: prestamo.fechaInicio ? dayjs(prestamo.fechaInicio) : null,
@@ -92,7 +89,6 @@ export const PrestamosForm = ({ prestamo, onSave, onCancel }) => {
       form.setFieldsValue(valoresIniciales);
       recalcularTodo(valoresIniciales);
     } else {
-      // Resetear cálculos al crear nuevo
       setCalculos({
         interesTotal: 0,
         totalPagar: 0,
@@ -107,7 +103,6 @@ export const PrestamosForm = ({ prestamo, onSave, onCancel }) => {
     try {
       setLoading(true);
       const clienteSeleccionado = clientes.find((c) => c.id === values.clienteId);
-      // Formatear fechas a string ISO
       const datosCompletos = {
         ...values,
         cliente: clienteSeleccionado?.nombreCompleto,
