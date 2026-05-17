@@ -11,4 +11,5 @@ export const Subjects = {
   CLIENTES: "clientes",
   PRESTAMOS: "prestamos",
   ADMINISTRACION: "administracion",
+  REPORTS: 'reports',
 };

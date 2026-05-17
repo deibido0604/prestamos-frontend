@@ -1,0 +1,72 @@
+@use "sass:color";
+
+$primary-color: #485bff;
+$secondary-color: #2a4b87;
+$light-bg: #f8f9ff;
+$white: #ffffff;
+$border-radius: 12px;
+
+.reports-page {
+  padding: 24px;
+  width: 100%;
+  background: linear-gradient(135deg, rgba($light-bg, 0.5) 0%, rgba($white, 1) 100%);
+  min-height: 100vh;
+
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
+
+  .reports-header {
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 14px;
+    }
+  }
+
+  .filters-card {
+    margin-bottom: 24px;
+    border-radius: $border-radius;
+    box-shadow: 0 2px 8px rgba($primary-color, 0.1);
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: $secondary-color;
+    }
+  }
+
+  .stats-row {
+    margin-bottom: 24px;
+  }
+
+  .chart-card,
+  .table-card {
+    border-radius: $border-radius;
+    box-shadow: 0 2px 8px rgba($primary-color, 0.1);
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 576px) {
+    .ant-card-head-title {
+      font-size: 16px;
+    }
+    .ant-statistic-title {
+      font-size: 13px;
+    }
+    .ant-statistic-content {
+      font-size: 20px;
+    }
+  }
+}

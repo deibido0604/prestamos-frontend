@@ -156,18 +156,26 @@ const AuthProvider = ({ children }) => {
             permissions: [
               { action: "read", subject: "main" },
               { action: "read", subject: "dashboard" },
+
               { action: "read", subject: "clientes" },
               { action: "create", subject: "clientes" },
               { action: "update", subject: "clientes" },
               { action: "delete", subject: "clientes" },
+
               { action: "read", subject: "prestamos" },
               { action: "create", subject: "prestamos" },
               { action: "update", subject: "prestamos" },
               { action: "delete", subject: "prestamos" },
+
               { action: "read", subject: "administracion" },
               { action: "create", subject: "administracion" },
               { action: "update", subject: "administracion" },
-              { action: "delete", subject: "administracion" }
+              { action: "delete", subject: "administracion" },
+
+              { action: "read", subject: "reports" },
+              { action: "create", subject: "reports" },
+              { action: "update", subject: "reports" },
+              { action: "delete", subject: "reports" }
             ]
           }
         ],

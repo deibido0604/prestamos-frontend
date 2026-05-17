@@ -22,32 +22,3 @@ export const permissionUrl = {
   create: `${API_URL}/permission/create`,
   update: `${API_URL}/permission/update`,
 };
-
-export const productsUrl = {
-  byId: `${API_URL}/products`,
-  list: `${API_URL}/products/list`,
-  create: `${API_URL}/products/create`,
-  update: `${API_URL}/products/update`,
-  delete: `${API_URL}/products/delete`,
-};
-
-export const branchUrl = {
-  byId: `${API_URL}/branchs`,
-  list: `${API_URL}/branchs/list`,
-  create: `${API_URL}/branchs/create`,
-  update: `${API_URL}/branchs/update`,
-  delete: `${API_URL}/branchs/delete`,
-  listForUser: `${API_URL}/branchs/user-destinations`,
-};
-
-export const outboundUrl = {
-  availableProductList: `${API_URL}/outbounds/available-products`,
-  checkAvailability: `${API_URL}/outbounds/check-availability`,
-  checkBranchLimit: `${API_URL}/outbounds/check-limit`,
-  createOutbound: `${API_URL}/outbounds/create`,
-  listOutbounds: `${API_URL}/outbounds/list`,
-  receiveOutbound: `${API_URL}/outbounds/receive`,
-  getOutboundDetails: `${API_URL}/outbounds`,
-  cancelOutbound: `${API_URL}/outbounds/cancel`,
-  getOutboundStats: `${API_URL}/outbounds/stats`,
-};

@@ -4,6 +4,7 @@ import {
   TeamOutlined,
   DollarOutlined,
   SettingOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 import { permissions } from "@utils";
 import { Link } from "react-router-dom";
@@ -28,6 +29,13 @@ export const sideBarMenu = ({ t }) => [
     icon: <DollarOutlined />,
     label: <Link to="/main/prestamos">Préstamos</Link>,
     subject: permissions.Subjects.PRESTAMOS,
+    action: permissions.Actions.READ,
+  },
+  {
+    key: "reportes",
+    icon: <BarChartOutlined />,
+    label: <Link to="/main/reportes">Reportes</Link>,
+    subject: permissions.Subjects.REPORTS,
     action: permissions.Actions.READ,
   },
   {
