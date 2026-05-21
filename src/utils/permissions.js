@@ -12,4 +12,5 @@ export const Subjects = {
   PRESTAMOS: "prestamos",
   ADMINISTRACION: "administracion",
   REPORTS: 'reports',
+  ALERTAS: "alertas",
 };

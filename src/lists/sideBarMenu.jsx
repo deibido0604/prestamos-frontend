@@ -5,6 +5,7 @@ import {
   DollarOutlined,
   SettingOutlined,
   BarChartOutlined,
+  BellOutlined,
 } from "@ant-design/icons";
 import { permissions } from "@utils";
 import { Link } from "react-router-dom";
@@ -39,10 +40,18 @@ export const sideBarMenu = ({ t }) => [
     action: permissions.Actions.READ,
   },
   {
+    key: "alertas",
+    icon: <BellOutlined />,
+    label: <Link to="/main/alertas">Alertas</Link>,
+    subject: permissions.Subjects.ALERTAS,
+    action: permissions.Actions.READ,
+  },
+  {
     key: "administracion",
     icon: <SettingOutlined />,
     label: <Link to="/main/administracion">Usuarios</Link>,
     subject: permissions.Subjects.ADMINISTRACION,
     action: permissions.Actions.READ,
   },
+  
 ];

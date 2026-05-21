@@ -1,0 +1,364 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  Card,
+  Row,
+  Col,
+  Button,
+  Table,
+  Switch,
+  Tag,
+  Space,
+  Modal,
+  Form,
+  Input,
+  Select,
+  message,
+  Popconfirm,
+  Tabs,
+  Badge,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  MailOutlined,
+  BellOutlined,
+  ExperimentOutlined,
+} from "@ant-design/icons";
+import { CardContent } from "../../../admin/components";
+import dayjs from "dayjs";
+import "./AlertasPage.scss";
+
+const { Option } = Select;
+const { TabPane } = Tabs;
+
+// Tipos de eventos disponibles
+const EVENTOS = [
+  { value: "prestamo_vencido", label: "Préstamo vencido" },
+  { value: "pago_proximo", label: "Pago próximo (3 días antes)" },
+  { value: "prestamo_aprobado", label: "Préstamo aprobado" },
+  { value: "cuota_pagada", label: "Cuota pagada" },
+];
+
+// Simulación de almacenamiento local (para no depender del backend)
+const STORAGE_KEY = "alertas_config";
+
+const AlertasPage = () => {
+  const dispatch = useDispatch();
+  const [alertas, setAlertas] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [form] = Form.useForm();
+  const [testEmailVisible, setTestEmailVisible] = useState(false);
+  const [testForm] = Form.useForm();
+
+  // Cargar configuraciones guardadas
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      setAlertas(JSON.parse(stored));
+    } else {
+      // Datos de ejemplo
+      const defaultAlertas = [
+        {
+          id: "1",
+          nombre: "Alerta vencimiento",
+          evento: "prestamo_vencido",
+          destinatarios: ["admin@prestamos.com", "cobranza@prestamos.com"],
+          activo: true,
+          plantilla: "El préstamo de {monto} ha vencido.",
+        },
+        {
+          id: "2",
+          nombre: "Recordatorio pago",
+          evento: "pago_proximo",
+          destinatarios: ["cliente@example.com"],
+          activo: true,
+          plantilla: "Tu cuota vence el {fecha}.",
+        },
+      ];
+      setAlertas(defaultAlertas);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultAlertas));
+    }
+  }, []);
+
+  const guardarAlertas = (nuevasAlertas) => {
+    setAlertas(nuevasAlertas);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(nuevasAlertas));
+  };
+
+  const handleAdd = () => {
+    setEditingId(null);
+    form.resetFields();
+    setModalVisible(true);
+  };
+
+  const handleEdit = (record) => {
+    setEditingId(record.id);
+    form.setFieldsValue({
+      nombre: record.nombre,
+      evento: record.evento,
+      destinatarios: record.destinatarios.join(","),
+      activo: record.activo,
+      plantilla: record.plantilla,
+    });
+    setModalVisible(true);
+  };
+
+  const handleDelete = (id) => {
+    const nuevas = alertas.filter((a) => a.id !== id);
+    guardarAlertas(nuevas);
+    message.success("Alerta eliminada");
+  };
+
+  const handleToggleActivo = (id, checked) => {
+    const nuevas = alertas.map((a) =>
+      a.id === id ? { ...a, activo: checked } : a
+    );
+    guardarAlertas(nuevas);
+    message.info(`Alerta ${checked ? "activada" : "desactivada"}`);
+  };
+
+  const handleSubmit = () => {
+    form.validateFields().then((values) => {
+      const destinatarios = values.destinatarios
+        .split(",")
+        .map((email) => email.trim())
+        .filter((e) => e);
+      const nuevaAlerta = {
+        id: editingId || Date.now().toString(),
+        nombre: values.nombre,
+        evento: values.evento,
+        destinatarios,
+        activo: values.activo,
+        plantilla: values.plantilla,
+      };
+      let nuevas;
+      if (editingId) {
+        nuevas = alertas.map((a) => (a.id === editingId ? nuevaAlerta : a));
+      } else {
+        nuevas = [...alertas, nuevaAlerta];
+      }
+      guardarAlertas(nuevas);
+      setModalVisible(false);
+      message.success(editingId ? "Alerta actualizada" : "Alerta creada");
+    });
+  };
+
+  const handleTestEmail = () => {
+    testForm.validateFields().then((values) => {
+      // Simular envío de correo de prueba
+      message.loading("Enviando correo de prueba...", 1).then(() => {
+        // Aquí se llamaría al backend: POST /api/alertas/test
+        console.log("Enviar a:", values.testEmail, "con evento:", values.testEvento);
+        message.success(`Correo de prueba enviado a ${values.testEmail}`);
+        setTestEmailVisible(false);
+        testForm.resetFields();
+      });
+    });
+  };
+
+  const columns = [
+    {
+      title: "Nombre",
+      dataIndex: "nombre",
+      key: "nombre",
+    },
+    {
+      title: "Evento",
+      dataIndex: "evento",
+      key: "evento",
+      render: (ev) => (
+        <Tag color="blue">{EVENTOS.find((e) => e.value === ev)?.label || ev}</Tag>
+      ),
+    },
+    {
+      title: "Destinatarios",
+      dataIndex: "destinatarios",
+      key: "destinatarios",
+      render: (emails) => (
+        <Space direction="vertical" size="small">
+          {emails.map((email, idx) => (
+            <Tag key={idx} icon={<MailOutlined />} color="geekblue">
+              {email}
+            </Tag>
+          ))}
+        </Space>
+      ),
+    },
+    {
+      title: "Estado",
+      dataIndex: "activo",
+      key: "activo",
+      render: (activo, record) => (
+        <Switch
+          checked={activo}
+          onChange={(checked) => handleToggleActivo(record.id, checked)}
+        />
+      ),
+    },
+    {
+      title: "Plantilla",
+      dataIndex: "plantilla",
+      key: "plantilla",
+      ellipsis: true,
+    },
+    {
+      title: "Acciones",
+      key: "acciones",
+      render: (_, record) => (
+        <Space>
+          <Button
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => handleEdit(record)}
+          />
+          <Popconfirm
+            title="¿Eliminar esta alerta?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Sí"
+            cancelText="No"
+          >
+            <Button icon={<DeleteOutlined />} size="small" danger />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
+  return (
+    <CardContent className="alertas-page">
+      <div className="alertas-header">
+        <h1>
+          <BellOutlined /> Configuración de Alertas por Correo
+        </h1>
+        <p className="subtitle">
+          Administra las reglas de notificación y prueba el envío de correos
+        </p>
+      </div>
+
+      <Tabs defaultActiveKey="config">
+        <TabPane tab="Reglas de Alerta" key="config">
+          <Card className="alertas-card">
+            <div style={{ marginBottom: 16, textAlign: "right" }}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+                Nueva Alerta
+              </Button>
+            </div>
+            <Table
+              columns={columns}
+              dataSource={alertas}
+              rowKey="id"
+              pagination={false}
+            />
+          </Card>
+        </TabPane>
+
+        <TabPane tab="Prueba de Envío" key="test">
+          <Card className="alertas-card">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <p>
+                  Envía un correo de prueba para verificar que la configuración
+                  SMTP funciona correctamente.
+                </p>
+                <Button
+                  type="primary"
+                  icon={<ExperimentOutlined />}
+                  onClick={() => setTestEmailVisible(true)}
+                >
+                  Enviar correo de prueba
+                </Button>
+              </Col>
+            </Row>
+          </Card>
+        </TabPane>
+      </Tabs>
+
+      {/* Modal para crear/editar alerta */}
+      <Modal
+        title={editingId ? "Editar Alerta" : "Nueva Alerta"}
+        open={modalVisible}
+        onOk={handleSubmit}
+        onCancel={() => setModalVisible(false)}
+        width={600}
+      >
+        <Form form={form} layout="vertical" initialValues={{ activo: true }}>
+          <Form.Item
+            name="nombre"
+            label="Nombre de la alerta"
+            rules={[{ required: true, message: "Ingrese un nombre" }]}
+          >
+            <Input placeholder="Ej: Alerta vencimiento" />
+          </Form.Item>
+          <Form.Item
+            name="evento"
+            label="Evento disparador"
+            rules={[{ required: true }]}
+          >
+            <Select placeholder="Seleccione un evento">
+              {EVENTOS.map((e) => (
+                <Option key={e.value} value={e.value}>
+                  {e.label}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="destinatarios"
+            label="Correos electrónicos (separados por coma)"
+            rules={[{ required: true, message: "Ingrese al menos un correo" }]}
+            tooltip="Ej: admin@dominio.com, cobranza@dominio.com"
+          >
+            <Input placeholder="correo1@ejemplo.com, correo2@ejemplo.com" />
+          </Form.Item>
+          <Form.Item name="activo" label="Activo" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <Form.Item
+            name="plantilla"
+            label="Plantilla del mensaje (opcional)"
+            tooltip="Puedes usar variables como {monto}, {nombreCliente}, {fecha}"
+          >
+            <Input.TextArea rows={3} placeholder="Mensaje personalizado..." />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Modal para prueba de correo */}
+      <Modal
+        title="Enviar correo de prueba"
+        open={testEmailVisible}
+        onOk={handleTestEmail}
+        onCancel={() => setTestEmailVisible(false)}
+      >
+        <Form form={testForm} layout="vertical">
+          <Form.Item
+            name="testEmail"
+            label="Correo destino"
+            rules={[{ required: true, type: "email", message: "Correo válido requerido" }]}
+          >
+            <Input placeholder="tu@correo.com" />
+          </Form.Item>
+          <Form.Item
+            name="testEvento"
+            label="Evento simulado"
+            rules={[{ required: true }]}
+          >
+            <Select placeholder="Selecciona un evento">
+              {EVENTOS.map((e) => (
+                <Option key={e.value} value={e.value}>
+                  {e.label}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </CardContent>
+  );
+};
+
+export default AlertasPage;

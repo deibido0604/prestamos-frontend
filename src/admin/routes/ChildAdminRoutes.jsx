@@ -4,6 +4,7 @@ import clientesRoutes from '../modules/clientes/routes'
 import prestamosRoutes from '../modules/prestamos/routes'
 import administracionRoutes from '../modules/administracion/routes'
 import reportsRoutes from '../modules/reports/routes'
+import alertasRoutes from '../modules/alertas/routes'
 
 export default [
     ...dashboardRoutes,
@@ -11,5 +12,6 @@ export default [
     ...prestamosRoutes,
     ...administracionRoutes,
     ...reportsRoutes,
+    ...alertasRoutes, 
     {path:'*', to:'dashboard', element: Navigate}
 ]

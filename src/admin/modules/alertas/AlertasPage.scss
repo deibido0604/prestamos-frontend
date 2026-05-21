@@ -1,0 +1,38 @@
+@use "sass:color";
+
+$primary-color: #485bff;
+$secondary-color: #2a4b87;
+$light-bg: #f8f9ff;
+$white: #ffffff;
+$border-radius: 12px;
+
+.alertas-page {
+  padding: 24px;
+  width: 100%;
+  background: linear-gradient(135deg, rgba($light-bg, 0.5) 0%, rgba($white, 1) 100%);
+  min-height: 100vh;
+
+  .alertas-header {
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 14px;
+    }
+  }
+
+  .alertas-card {
+    border-radius: $border-radius;
+    box-shadow: 0 2px 8px rgba($primary-color, 0.1);
+    margin-bottom: 24px;
+  }
+}

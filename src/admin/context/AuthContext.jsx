@@ -175,7 +175,12 @@ const AuthProvider = ({ children }) => {
               { action: "read", subject: "reports" },
               { action: "create", subject: "reports" },
               { action: "update", subject: "reports" },
-              { action: "delete", subject: "reports" }
+              { action: "delete", subject: "reports" },
+              
+              { action: "read", subject: "alertas" },
+              { action: "create", subject: "alertas" },
+              { action: "update", subject: "alertas" },
+              { action: "delete", subject: "alertas" },
             ]
           }
         ],
