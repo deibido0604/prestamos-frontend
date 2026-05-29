@@ -29,6 +29,7 @@ import {
 } from "@ant-design/icons";
 import { CardContent } from "../../../admin/components";
 import dayjs from "dayjs";
+import { useMediaQuery } from "../../../admin/hooks/useMediaQuery";
 import "./AlertasPage.scss";
 
 const { Option } = Select;
@@ -53,6 +54,7 @@ const AlertasPage = () => {
   const [form] = Form.useForm();
   const [testEmailVisible, setTestEmailVisible] = useState(false);
   const [testForm] = Form.useForm();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Cargar configuraciones guardadas
   useEffect(() => {
@@ -165,6 +167,8 @@ const AlertasPage = () => {
       title: "Nombre",
       dataIndex: "nombre",
       key: "nombre",
+      width: isMobile ? "100%" : "auto",
+      ellipsis: true,
     },
     {
       title: "Evento",
@@ -173,6 +177,7 @@ const AlertasPage = () => {
       render: (ev) => (
         <Tag color="blue">{EVENTOS.find((e) => e.value === ev)?.label || ev}</Tag>
       ),
+      hidden: isMobile,
     },
     {
       title: "Destinatarios",
@@ -180,13 +185,15 @@ const AlertasPage = () => {
       key: "destinatarios",
       render: (emails) => (
         <Space direction="vertical" size="small">
-          {emails.map((email, idx) => (
+          {emails.slice(0, isMobile ? 1 : 3).map((email, idx) => (
             <Tag key={idx} icon={<MailOutlined />} color="geekblue">
-              {email}
+              {isMobile ? (email.substring(0, 15) + (email.length > 15 ? "..." : "")) : email}
             </Tag>
           ))}
+          {emails.length > (isMobile ? 1 : 3) && <Tag>+{emails.length - (isMobile ? 1 : 3)}</Tag>}
         </Space>
       ),
+      hidden: isMobile,
     },
     {
       title: "Estado",
@@ -196,6 +203,7 @@ const AlertasPage = () => {
         <Switch
           checked={activo}
           onChange={(checked) => handleToggleActivo(record.id, checked)}
+          size={isMobile ? "small" : "default"}
         />
       ),
     },
@@ -204,15 +212,16 @@ const AlertasPage = () => {
       dataIndex: "plantilla",
       key: "plantilla",
       ellipsis: true,
+      hidden: isMobile,
     },
     {
       title: "Acciones",
       key: "acciones",
       render: (_, record) => (
-        <Space>
+        <Space size={isMobile ? "small" : "middle"}>
           <Button
             icon={<EditOutlined />}
-            size="small"
+            size={isMobile ? "small" : "default"}
             onClick={() => handleEdit(record)}
           />
           <Popconfirm
@@ -221,12 +230,12 @@ const AlertasPage = () => {
             okText="Sí"
             cancelText="No"
           >
-            <Button icon={<DeleteOutlined />} size="small" danger />
+            <Button icon={<DeleteOutlined />} size={isMobile ? "small" : "default"} danger />
           </Popconfirm>
         </Space>
       ),
     },
-  ];
+  ].filter((col) => !col.hidden);
 
   return (
     <CardContent className="alertas-page">
@@ -239,20 +248,71 @@ const AlertasPage = () => {
         </p>
       </div>
 
-      <Tabs defaultActiveKey="config">
+      <Tabs defaultActiveKey="config" className="alertas-tabs">
         <TabPane tab="Reglas de Alerta" key="config">
           <Card className="alertas-card">
-            <div style={{ marginBottom: 16, textAlign: "right" }}>
-              <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+            <div className="alertas-actions">
+              <Button 
+                type="primary" 
+                icon={<PlusOutlined />} 
+                onClick={handleAdd}
+                block={isMobile}
+              >
                 Nueva Alerta
               </Button>
             </div>
-            <Table
-              columns={columns}
-              dataSource={alertas}
-              rowKey="id"
-              pagination={false}
-            />
+            {isMobile ? (
+              <div className="alertas-mobile-list">
+                {alertas.map((alerta) => (
+                  <Card key={alerta.id} className="alerta-mobile-card" size="small">
+                    <div className="alerta-mobile-row">
+                      <strong>{alerta.nombre}</strong>
+                      <Switch
+                        checked={alerta.activo}
+                        onChange={(checked) => handleToggleActivo(alerta.id, checked)}
+                        size="small"
+                      />
+                    </div>
+                    <div className="alerta-mobile-row">
+                      <Tag color="blue">
+                        {EVENTOS.find((e) => e.value === alerta.evento)?.label || alerta.evento}
+                      </Tag>
+                    </div>
+                    <div className="alerta-mobile-row">
+                      <small>
+                        <MailOutlined /> {alerta.destinatarios.join(", ")}
+                      </small>
+                    </div>
+                    <div className="alerta-mobile-row">
+                      <small className="plantilla-text">{alerta.plantilla}</small>
+                    </div>
+                    <div className="alerta-mobile-actions">
+                      <Button
+                        icon={<EditOutlined />}
+                        size="small"
+                        onClick={() => handleEdit(alerta)}
+                      />
+                      <Popconfirm
+                        title="¿Eliminar esta alerta?"
+                        onConfirm={() => handleDelete(alerta.id)}
+                        okText="Sí"
+                        cancelText="No"
+                      >
+                        <Button icon={<DeleteOutlined />} size="small" danger />
+                      </Popconfirm>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Table
+                columns={columns}
+                dataSource={alertas}
+                rowKey="id"
+                pagination={false}
+                scroll={{ x: true }}
+              />
+            )}
           </Card>
         </TabPane>
 
@@ -268,6 +328,7 @@ const AlertasPage = () => {
                   type="primary"
                   icon={<ExperimentOutlined />}
                   onClick={() => setTestEmailVisible(true)}
+                  block={isMobile}
                 >
                   Enviar correo de prueba
                 </Button>
@@ -283,7 +344,8 @@ const AlertasPage = () => {
         open={modalVisible}
         onOk={handleSubmit}
         onCancel={() => setModalVisible(false)}
-        width={600}
+        width={isMobile ? "95vw" : 600}
+        style={isMobile ? { maxWidth: "95vw" } : {}}
       >
         <Form form={form} layout="vertical" initialValues={{ activo: true }}>
           <Form.Item
@@ -333,6 +395,8 @@ const AlertasPage = () => {
         open={testEmailVisible}
         onOk={handleTestEmail}
         onCancel={() => setTestEmailVisible(false)}
+        width={isMobile ? "95vw" : 500}
+        style={isMobile ? { maxWidth: "95vw" } : {}}
       >
         <Form form={testForm} layout="vertical">
           <Form.Item
