@@ -3,14 +3,14 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { closeNotification } from '../../layout/store/layoutSlice';
 
-
 export const Notification = () => {
   const [api, contextHolder] = notification.useNotification();
-  const { message, description, placement, type, duration, show } = useSelector((state) =>  state.layout.notification);
+  const { title, description, placement, type, duration, show } = useSelector(
+    (state) => state.layout.notification   // ✅ ahora 'title'
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
-
     if (show) {
       openNotfication();
       setTimeout(() => {
@@ -18,26 +18,20 @@ export const Notification = () => {
       }, duration || 3000);
     }
   }, [show]);
-  
+
   const handleClose = () => {
-    dispatch(closeNotification())
-  }
+    dispatch(closeNotification());
+  };
 
   const openNotfication = () => {
-
     api[type]({
-      message,
+      title,        // ✅ usamos 'title'
       description,
       placement,
       duration,
-      onclose: handleClose
+      onClose: handleClose,
     });
-  }
-   
-  return (
-    <>
-      {contextHolder}
-    </>
-  );
-};
+  };
 
+  return <>{contextHolder}</>;
+};

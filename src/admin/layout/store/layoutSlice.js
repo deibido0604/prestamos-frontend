@@ -5,7 +5,7 @@ export const layoutSlice = createSlice({
   initialState: {
     notification: {
       show: false,
-      message: '',
+      title: '',         // ✅ cambiado de 'message' a 'title'
       description: '',
       placement: '',
       type: '',
@@ -19,7 +19,7 @@ export const layoutSlice = createSlice({
     closeNotification: (state) => {
       state.notification = {
         show: false,
-        message: '',
+        title: '',       // ✅ cambiado
         description: '',
         placement: '',
         type: '',

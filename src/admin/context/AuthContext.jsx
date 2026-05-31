@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch } from "react-redux";
 import { setLogged } from "../../config/store";
-import { useApi, useLocalStorage } from "@hooks";
-import { endpoints } from "@utils";
+import { useLocalStorage } from "@hooks";
 import {
   createContext,
   useContext,
@@ -15,6 +14,7 @@ import { AbilityContext } from "./AbilityContext";
 import { openNotification } from "../layout/store/layoutSlice";
 import { persistor, resetStore } from "../../store/store";
 import LoadingPage from "../components/Loader/LoadingPage";
+import axios from "axios"; // ✅ Axios directo
 
 const defaultProvider = {
   user: null,
@@ -30,13 +30,15 @@ const AuthContext = createContext(defaultProvider);
 const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
   const ability = useContext(AbilityContext);
-  const axios = useApi();
   const { setItemWithEncryption, removeItem, getItemWithDecryption } =
     useLocalStorage();
   const navigate = useNavigate();
 
   const [user, setUser] = useState(defaultProvider.user);
   const [initializing, setInitializing] = useState(true);
+
+  // ✅ Base URL desde variables de entorno
+  const API_BASE_URL = "https://prestamos-backend-ten.vercel.app/api-prestamos";
 
   // =========================
   // INIT AUTH
@@ -137,94 +139,57 @@ const AuthProvider = ({ children }) => {
   };
 
   // =========================
-  // MOCK LOGIN (SIN BACKEND)
+  // LOGIN CON BACKEND REAL
   // =========================
   const handleLogin = async ({ username, password }) => {
-    const mockUser = {
-      username: "admin",
-      password: "admin123",
-      data: {
-        _id: "1",
-        username: "admin",
-        email: "admin@prestamos.com",
-        name: "Administrador",
-        active: true,
-        roles: [
-          {
-            name: "Admin",
-            type: "admin",
-            permissions: [
-              { action: "read", subject: "main" },
-              { action: "read", subject: "dashboard" },
+    try {
+      // ✅ Usamos axios directamente con la URL completa
+      const response = await axios.post(`${API_BASE_URL}/systemUsers/login`, {
+        username,
+        password,
+      });
 
-              { action: "read", subject: "clientes" },
-              { action: "create", subject: "clientes" },
-              { action: "update", subject: "clientes" },
-              { action: "delete", subject: "clientes" },
+      // ⚠️ Ajusta según la estructura real de tu backend
+      // Si tu backend devuelve { data: { user, token, roles } } usa response.data.data
+      const { user, token, roles } = response.data;
 
-              { action: "read", subject: "prestamos" },
-              { action: "create", subject: "prestamos" },
-              { action: "update", subject: "prestamos" },
-              { action: "delete", subject: "prestamos" },
-
-              { action: "read", subject: "administracion" },
-              { action: "create", subject: "administracion" },
-              { action: "update", subject: "administracion" },
-              { action: "delete", subject: "administracion" },
-
-              { action: "read", subject: "reports" },
-              { action: "create", subject: "reports" },
-              { action: "update", subject: "reports" },
-              { action: "delete", subject: "reports" },
-              
-              { action: "read", subject: "alertas" },
-              { action: "create", subject: "alertas" },
-              { action: "update", subject: "alertas" },
-              { action: "delete", subject: "alertas" },
-            ]
-          }
-        ],
-        token: "fake-token"
-      }
-    };
-
-    if (
-      username === mockUser.username &&
-      password === mockUser.password
-    ) {
-      const data = mockUser.data;
-
-      const role = setUserRoles(data.roles);
+      const roleData = setUserRoles(roles || []);
 
       const userData = {
         user: {
-          id: data._id,
-          username: data.username,
-          email: data.email,
-          name: data.name,
-          active: data.active
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          name: user.name,
+          active: user.active,
         },
-        token: data.token,
-        role,
-        permissions: role.permissions
+        token,
+        role: roleData,
+        permissions: roleData.permissions,
       };
 
       setItemWithEncryption("data", userData);
-
       handleSetUser(userData);
       dispatch(setLogged(true));
-
-      handleUpdateAbility(role.permissions);
-
+      handleUpdateAbility(roleData.permissions);
       navigate("/main", { replace: true });
-    } else {
+    } catch (error) {
+      let errorMessage = "Error al iniciar sesión";
+      if (error.response) {
+        errorMessage = error.response.data?.message || error.response.data?.error || "Credenciales incorrectas";
+      } else if (error.request) {
+        errorMessage = "No se pudo conectar con el servidor";
+      } else {
+        errorMessage = error.message;
+      }
+      // ✅ Usamos 'title' en lugar de 'message'
       dispatch(
         openNotification({
-          message: "Error",
-          description: "Credenciales incorrectas",
+          title: "Error",
+          description: errorMessage,
           type: "error",
           placement: "bottom",
-          show: true
+          show: true,
         })
       );
     }

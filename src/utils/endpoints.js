@@ -1,5 +1,5 @@
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api-prestamos";
+const API_URL = "https://prestamos-backend-ten.vercel.app/api-prestamos";
 // For local development set VITE_API_URL=http://localhost:3000/api-prestamos in .env.local
 // For production set VITE_API_URL to your deployed backend URL in .env.production
 
