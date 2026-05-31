@@ -143,46 +143,58 @@ const AuthProvider = ({ children }) => {
   // =========================
   const handleLogin = async ({ username, password }) => {
     try {
-      // ✅ Usamos axios directamente con la URL completa
       const response = await axios.post(`${API_BASE_URL}/systemUsers/login`, {
         username,
         password,
       });
 
-      // ⚠️ Ajusta según la estructura real de tu backend
-      // Si tu backend devuelve { data: { user, token, roles } } usa response.data.data
-      const { user, token, roles } = response.data;
+      // ✅ Extraer datos de response.data.data
+      const { user, token, roles } = response.data.data;
 
-      const roleData = setUserRoles(roles || []);
+      // ✅ Transformar permisos: de { resource, actions } a { action, subject }
+      const transformedPermissions = [];
+      roles.forEach(role => {
+        role.permissions.forEach(perm => {
+          const { resource, actions } = perm;
+          actions.forEach(action => {
+            transformedPermissions.push({
+              action: action,
+              subject: resource
+            });
+          });
+        });
+      });
 
+      // Construir objeto userData para el frontend
       const userData = {
         user: {
           id: user.id,
           username: user.username,
           email: user.email,
-          name: user.name,
+          name: user.name || user.username, // si no viene name, usa username
           active: user.active,
         },
         token,
-        role: roleData,
-        permissions: roleData.permissions,
+        role: {
+          permissions: transformedPermissions
+        },
+        permissions: transformedPermissions,
       };
 
       setItemWithEncryption("data", userData);
       handleSetUser(userData);
       dispatch(setLogged(true));
-      handleUpdateAbility(roleData.permissions);
+      handleUpdateAbility(transformedPermissions);
       navigate("/main", { replace: true });
     } catch (error) {
       let errorMessage = "Error al iniciar sesión";
       if (error.response) {
-        errorMessage = error.response.data?.message || error.response.data?.error || "Credenciales incorrectas";
+        errorMessage = error.response.data?.message || "Credenciales incorrectas";
       } else if (error.request) {
         errorMessage = "No se pudo conectar con el servidor";
       } else {
         errorMessage = error.message;
       }
-      // ✅ Usamos 'title' en lugar de 'message'
       dispatch(
         openNotification({
           title: "Error",
