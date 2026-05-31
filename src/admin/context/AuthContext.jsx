@@ -141,71 +141,70 @@ const AuthProvider = ({ children }) => {
   // =========================
   // LOGIN CON BACKEND REAL
   // =========================
-  const handleLogin = async ({ username, password }) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/systemUsers/login`, {
-        username,
-        password,
-      });
+const handleLogin = async ({ username, password }) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/systemUsers/login`, {
+      username,
+      password,
+    });
 
-      // ✅ Extraer datos de response.data.data
-      const { user, token, roles } = response.data.data;
+    // ✅ La respuesta viene en response.data.data
+    const { token, roles, ...user } = response.data.data; // user contiene id, username, email, active, etc.
 
-      // ✅ Transformar permisos: de { resource, actions } a { action, subject }
-      const transformedPermissions = [];
-      roles.forEach(role => {
-        role.permissions.forEach(perm => {
-          const { resource, actions } = perm;
-          actions.forEach(action => {
-            transformedPermissions.push({
-              action: action,
-              subject: resource
-            });
+    // ✅ Transformar permisos de { resource, actions } a { action, subject }
+    const transformedPermissions = [];
+    roles.forEach(role => {
+      role.permissions.forEach(perm => {
+        const { resource, actions } = perm;
+        actions.forEach(action => {
+          transformedPermissions.push({
+            action: action,
+            subject: resource
           });
         });
       });
+    });
 
-      // Construir objeto userData para el frontend
-      const userData = {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          name: user.name || user.username, // si no viene name, usa username
-          active: user.active,
-        },
-        token,
-        role: {
-          permissions: transformedPermissions
-        },
-        permissions: transformedPermissions,
-      };
+    const userData = {
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        name: user.name || user.username, // si no viene name, usa username
+        active: user.active,
+      },
+      token,
+      role: {
+        permissions: transformedPermissions
+      },
+      permissions: transformedPermissions,
+    };
 
-      setItemWithEncryption("data", userData);
-      handleSetUser(userData);
-      dispatch(setLogged(true));
-      handleUpdateAbility(transformedPermissions);
-      navigate("/main", { replace: true });
-    } catch (error) {
-      let errorMessage = "Error al iniciar sesión";
-      if (error.response) {
-        errorMessage = error.response.data?.message || "Credenciales incorrectas";
-      } else if (error.request) {
-        errorMessage = "No se pudo conectar con el servidor";
-      } else {
-        errorMessage = error.message;
-      }
-      dispatch(
-        openNotification({
-          title: "Error",
-          description: errorMessage,
-          type: "error",
-          placement: "bottom",
-          show: true,
-        })
-      );
+    setItemWithEncryption("data", userData);
+    handleSetUser(userData);
+    dispatch(setLogged(true));
+    handleUpdateAbility(transformedPermissions);
+    navigate("/main", { replace: true });
+  } catch (error) {
+    let errorMessage = "Error al iniciar sesión";
+    if (error.response) {
+      errorMessage = error.response.data?.message || "Credenciales incorrectas";
+    } else if (error.request) {
+      errorMessage = "No se pudo conectar con el servidor";
+    } else {
+      errorMessage = error.message;
     }
-  };
+    dispatch(
+      openNotification({
+        title: "Error",
+        description: errorMessage,
+        type: "error",
+        placement: "bottom",
+        show: true,
+      })
+    );
+  }
+};
 
   // =========================
   // LOGOUT
