@@ -8,6 +8,7 @@ import { layoutSlice } from "../admin/layout/store/layoutSlice";
 import { usuariosSlice } from "../admin/modules/administracion/store/usuariosSlice";
 import { clientesSlice } from "../admin/modules/clientes/store/clientesSlice";
 import { prestamosSlice } from "../admin/modules/prestamos/store/prestamosSlice";
+import alertasReducer from "../admin/modules/alertas/store/alertasSlice";
 
 const rootReducer = combineReducers({
   config: configSlice.reducer,
@@ -15,12 +16,13 @@ const rootReducer = combineReducers({
   usuarios: usuariosSlice.reducer,
   clientes: clientesSlice.reducer,
   prestamos: prestamosSlice.reducer,
+  alertas: alertasReducer,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["config", "layout", "usuarios", "clientes", "prestamos"],
+  whitelist: ["config", "layout", "usuarios", "clientes", "prestamos", "alertas"],
 };
 
 export const RESET_STORE = "RESET_STORE";

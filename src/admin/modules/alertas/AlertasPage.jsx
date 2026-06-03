@@ -17,7 +17,7 @@ import {
   message,
   Popconfirm,
   Tabs,
-  Badge,
+  Spin,
 } from "antd";
 import {
   PlusOutlined,
@@ -28,14 +28,22 @@ import {
   ExperimentOutlined,
 } from "@ant-design/icons";
 import { CardContent } from "../../../admin/components";
-import dayjs from "dayjs";
 import { useMediaQuery } from "../../../admin/hooks/useMediaQuery";
+import {
+  fetchAlertas,
+  createAlerta,
+  updateAlerta,
+  deleteAlerta,
+  toggleAlertaActivo,
+  sendTestEmail,
+} from "./store/thunks";
+
+import { clearError, clearTestStatus } from "./store/alertasSlice";
 import "./AlertasPage.scss";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
 
-// Tipos de eventos disponibles
 const EVENTOS = [
   { value: "prestamo_vencido", label: "Préstamo vencido" },
   { value: "pago_proximo", label: "Pago próximo (3 días antes)" },
@@ -43,12 +51,11 @@ const EVENTOS = [
   { value: "cuota_pagada", label: "Cuota pagada" },
 ];
 
-// Simulación de almacenamiento local (para no depender del backend)
-const STORAGE_KEY = "alertas_config";
-
 const AlertasPage = () => {
   const dispatch = useDispatch();
-  const [alertas, setAlertas] = useState([]);
+  const { list: alertas, loading, error, testEmailSending, testEmailSuccess } = useSelector(
+    (state) => state.alertas
+  );
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form] = Form.useForm();
@@ -56,44 +63,33 @@ const AlertasPage = () => {
   const [testForm] = Form.useForm();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Cargar configuraciones guardadas
+  // Cargar alertas al montar el componente
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setAlertas(JSON.parse(stored));
-    } else {
-      // Datos de ejemplo
-      const defaultAlertas = [
-        {
-          id: "1",
-          nombre: "Alerta vencimiento",
-          evento: "prestamo_vencido",
-          destinatarios: ["admin@prestamos.com", "cobranza@prestamos.com"],
-          activo: true,
-          plantilla: "El préstamo de {monto} ha vencido.",
-        },
-        {
-          id: "2",
-          nombre: "Recordatorio pago",
-          evento: "pago_proximo",
-          destinatarios: ["cliente@example.com"],
-          activo: true,
-          plantilla: "Tu cuota vence el {fecha}.",
-        },
-      ];
-      setAlertas(defaultAlertas);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultAlertas));
-    }
-  }, []);
+    dispatch(fetchAlertas());
+  }, [dispatch]);
 
-  const guardarAlertas = (nuevasAlertas) => {
-    setAlertas(nuevasAlertas);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nuevasAlertas));
-  };
+  // Manejar errores globales
+  useEffect(() => {
+    if (error) {
+      message.error(error);
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
+
+  // Manejar éxito de envío de correo de prueba
+  useEffect(() => {
+    if (testEmailSuccess) {
+      message.success("Correo de prueba enviado correctamente");
+      dispatch(clearTestStatus());
+      setTestEmailVisible(false);
+      testForm.resetFields();
+    }
+  }, [testEmailSuccess, dispatch, testForm]);
 
   const handleAdd = () => {
     setEditingId(null);
     form.resetFields();
+    form.setFieldsValue({ activo: true, frecuencia: "diaria" });
     setModalVisible(true);
   };
 
@@ -105,22 +101,19 @@ const AlertasPage = () => {
       destinatarios: record.destinatarios.join(","),
       activo: record.activo,
       plantilla: record.plantilla,
+      frecuencia: record.frecuencia,
     });
     setModalVisible(true);
   };
 
   const handleDelete = (id) => {
-    const nuevas = alertas.filter((a) => a.id !== id);
-    guardarAlertas(nuevas);
-    message.success("Alerta eliminada");
+    dispatch(deleteAlerta(id)).then(() => {
+      message.success("Alerta eliminada");
+    });
   };
 
   const handleToggleActivo = (id, checked) => {
-    const nuevas = alertas.map((a) =>
-      a.id === id ? { ...a, activo: checked } : a
-    );
-    guardarAlertas(nuevas);
-    message.info(`Alerta ${checked ? "activada" : "desactivada"}`);
+    dispatch(toggleAlertaActivo({ id, activo: checked }));
   };
 
   const handleSubmit = () => {
@@ -129,36 +122,35 @@ const AlertasPage = () => {
         .split(",")
         .map((email) => email.trim())
         .filter((e) => e);
-      const nuevaAlerta = {
-        id: editingId || Date.now().toString(),
+      const alertaData = {
         nombre: values.nombre,
         evento: values.evento,
         destinatarios,
         activo: values.activo,
         plantilla: values.plantilla,
+        frecuencia: values.frecuencia,
       };
-      let nuevas;
       if (editingId) {
-        nuevas = alertas.map((a) => (a.id === editingId ? nuevaAlerta : a));
+        dispatch(updateAlerta({ id: editingId, ...alertaData }))
+          .unwrap()
+          .then(() => {
+            message.success("Alerta actualizada");
+            setModalVisible(false);
+          });
       } else {
-        nuevas = [...alertas, nuevaAlerta];
+        dispatch(createAlerta(alertaData))
+          .unwrap()
+          .then(() => {
+            message.success("Alerta creada");
+            setModalVisible(false);
+          });
       }
-      guardarAlertas(nuevas);
-      setModalVisible(false);
-      message.success(editingId ? "Alerta actualizada" : "Alerta creada");
     });
   };
 
   const handleTestEmail = () => {
     testForm.validateFields().then((values) => {
-      // Simular envío de correo de prueba
-      message.loading("Enviando correo de prueba...", 1).then(() => {
-        // Aquí se llamaría al backend: POST /api/alertas/test
-        console.log("Enviar a:", values.testEmail, "con evento:", values.testEvento);
-        message.success(`Correo de prueba enviado a ${values.testEmail}`);
-        setTestEmailVisible(false);
-        testForm.resetFields();
-      });
+      dispatch(sendTestEmail({ email: values.testEmail, evento: values.testEvento }));
     });
   };
 
@@ -180,17 +172,27 @@ const AlertasPage = () => {
       hidden: isMobile,
     },
     {
+      title: "Frecuencia",
+      dataIndex: "frecuencia",
+      key: "frecuencia",
+      render: (freq) => {
+        const map = { diaria: "Diaria", semanal: "Semanal", mensual: "Mensual" };
+        return <Tag>{map[freq] || freq}</Tag>;
+      },
+      hidden: isMobile,
+    },
+    {
       title: "Destinatarios",
       dataIndex: "destinatarios",
       key: "destinatarios",
       render: (emails) => (
         <Space direction="vertical" size="small">
-          {emails.slice(0, isMobile ? 1 : 3).map((email, idx) => (
+          {emails.slice(0, isMobile ? 1 : 2).map((email, idx) => (
             <Tag key={idx} icon={<MailOutlined />} color="geekblue">
               {isMobile ? (email.substring(0, 15) + (email.length > 15 ? "..." : "")) : email}
             </Tag>
           ))}
-          {emails.length > (isMobile ? 1 : 3) && <Tag>+{emails.length - (isMobile ? 1 : 3)}</Tag>}
+          {emails.length > (isMobile ? 1 : 2) && <Tag>+{emails.length - (isMobile ? 1 : 2)}</Tag>}
         </Space>
       ),
       hidden: isMobile,
@@ -206,13 +208,6 @@ const AlertasPage = () => {
           size={isMobile ? "small" : "default"}
         />
       ),
-    },
-    {
-      title: "Plantilla",
-      dataIndex: "plantilla",
-      key: "plantilla",
-      ellipsis: true,
-      hidden: isMobile,
     },
     {
       title: "Acciones",
@@ -237,6 +232,14 @@ const AlertasPage = () => {
     },
   ].filter((col) => !col.hidden);
 
+  if (loading && alertas.length === 0) {
+    return (
+      <CardContent className="alertas-page">
+        <Spin size="large" style={{ display: "block", margin: "50px auto" }} />
+      </CardContent>
+    );
+  }
+
   return (
     <CardContent className="alertas-page">
       <div className="alertas-header">
@@ -252,9 +255,9 @@ const AlertasPage = () => {
         <TabPane tab="Reglas de Alerta" key="config">
           <Card className="alertas-card">
             <div className="alertas-actions">
-              <Button 
-                type="primary" 
-                icon={<PlusOutlined />} 
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
                 onClick={handleAdd}
                 block={isMobile}
               >
@@ -279,12 +282,18 @@ const AlertasPage = () => {
                       </Tag>
                     </div>
                     <div className="alerta-mobile-row">
+                      <Tag>
+                        {alerta.frecuencia === "diaria"
+                          ? "Diaria"
+                          : alerta.frecuencia === "semanal"
+                          ? "Semanal"
+                          : "Mensual"}
+                      </Tag>
+                    </div>
+                    <div className="alerta-mobile-row">
                       <small>
                         <MailOutlined /> {alerta.destinatarios.join(", ")}
                       </small>
-                    </div>
-                    <div className="alerta-mobile-row">
-                      <small className="plantilla-text">{alerta.plantilla}</small>
                     </div>
                     <div className="alerta-mobile-actions">
                       <Button
@@ -328,6 +337,7 @@ const AlertasPage = () => {
                   type="primary"
                   icon={<ExperimentOutlined />}
                   onClick={() => setTestEmailVisible(true)}
+                  loading={testEmailSending}
                   block={isMobile}
                 >
                   Enviar correo de prueba
@@ -345,9 +355,8 @@ const AlertasPage = () => {
         onOk={handleSubmit}
         onCancel={() => setModalVisible(false)}
         width={isMobile ? "95vw" : 600}
-        style={isMobile ? { maxWidth: "95vw" } : {}}
       >
-        <Form form={form} layout="vertical" initialValues={{ activo: true }}>
+        <Form form={form} layout="vertical" initialValues={{ activo: true, frecuencia: "diaria" }}>
           <Form.Item
             name="nombre"
             label="Nombre de la alerta"
@@ -376,6 +385,17 @@ const AlertasPage = () => {
           >
             <Input placeholder="correo1@ejemplo.com, correo2@ejemplo.com" />
           </Form.Item>
+          <Form.Item
+            name="frecuencia"
+            label="Frecuencia de notificación"
+            rules={[{ required: true }]}
+          >
+            <Select>
+              <Option value="diaria">Diaria</Option>
+              <Option value="semanal">Semanal</Option>
+              <Option value="mensual">Mensual</Option>
+            </Select>
+          </Form.Item>
           <Form.Item name="activo" label="Activo" valuePropName="checked">
             <Switch />
           </Form.Item>
@@ -395,8 +415,8 @@ const AlertasPage = () => {
         open={testEmailVisible}
         onOk={handleTestEmail}
         onCancel={() => setTestEmailVisible(false)}
+        confirmLoading={testEmailSending}
         width={isMobile ? "95vw" : 500}
-        style={isMobile ? { maxWidth: "95vw" } : {}}
       >
         <Form form={testForm} layout="vertical">
           <Form.Item
