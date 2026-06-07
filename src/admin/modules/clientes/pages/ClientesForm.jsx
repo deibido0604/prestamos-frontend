@@ -47,14 +47,29 @@ const ClientesForm = ({ cliente, onSuccess, onCancel, t }) => {
         ]);
       }
     } else {
-      // Nuevo cliente: 3 filas vacías
       setReferencias([
         { nombre: "", telefono: "" },
         { nombre: "", telefono: "" },
         { nombre: "", telefono: "" },
       ]);
     }
-  }, [cliente]);
+
+    // Cargar el resto de los campos del formulario
+    if (cliente) {
+      form.setFieldsValue({
+        nombreCompleto: cliente.nombreCompleto,
+        cedula: cliente.cedula,
+        correo: cliente.correo,
+        telefono: cliente.telefono,
+        telefonoSecundario: cliente.telefonoSecundario,
+        direccion: cliente.direccion,
+        profesion: cliente.profesion,
+        lugarTrabajo: cliente.lugarTrabajo,
+        antiguedad: cliente.antiguedad,
+        estado: cliente.estado,
+      });
+    }
+  }, [cliente, form]);
 
   const addReferencia = () => {
     setReferencias([...referencias, { nombre: "", telefono: "" }]);

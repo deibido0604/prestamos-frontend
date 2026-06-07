@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Space, Table, Tag, Button, Popconfirm, Card, Typography, Row, Col } from "antd";
 import { EditOutlined, DeleteOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
 import { permissions } from "@utils";
@@ -49,7 +50,17 @@ const MobileCardView = ({ data, onEdit, onDelete, renderReferencias, t }) => (
 );
 
 const ClientesTable = ({ data, loading, onEdit, onDelete, t }) => {
-  // Formatear referencias para mostrar (función auxiliar)
+  // Estado inicial calculado directamente (sin setState síncrono en efecto)
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia("(max-width: 768px)").matches);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const handler = (e) => setIsMobile(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+
+  // Formatear referencias para mostrar
   const renderReferencias = (referencias) => {
     if (!referencias) return "-";
     let refs = [];
@@ -116,28 +127,19 @@ const ClientesTable = ({ data, loading, onEdit, onDelete, t }) => {
     },
   ];
 
+  if (isMobile) {
+    return <MobileCardView data={data} onEdit={onEdit} onDelete={onDelete} renderReferencias={renderReferencias} t={t} />;
+  }
+
   return (
-    <>
-      <div className="desktop-view">
-        <Table
-          columns={columns}
-          dataSource={data}
-          loading={loading}
-          rowKey="id"
-          pagination={{ showTotal: (total) => `${t("clientes.total")}: ${total}`, pageSize: 10, showSizeChanger: true }}
-          scroll={{ x: 1000 }}
-        />
-      </div>
-      <div className="mobile-view">
-        <MobileCardView
-          data={data}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          renderReferencias={renderReferencias}
-          t={t}
-        />
-      </div>
-    </>
+    <Table
+      columns={columns}
+      dataSource={data}
+      loading={loading}
+      rowKey="id"
+      pagination={{ showTotal: (total) => `${t("clientes.total")}: ${total}`, pageSize: 10, showSizeChanger: true }}
+      scroll={{ x: 1000 }}
+    />
   );
 };
 
