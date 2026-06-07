@@ -6,7 +6,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { configSlice } from "../config/store/configSlice";
 import { layoutSlice } from "../admin/layout/store/layoutSlice";
 import { usuariosSlice } from "../admin/modules/administracion/store/usuariosSlice";
-import { clientesSlice } from "../admin/modules/clientes/store/clientesSlice";
+import clientesReducer from "../admin/modules/clientes/store/clientesSlice";
 import { prestamosSlice } from "../admin/modules/prestamos/store/prestamosSlice";
 import alertasReducer from "../admin/modules/alertas/store/alertasSlice";
 
@@ -14,7 +14,7 @@ const rootReducer = combineReducers({
   config: configSlice.reducer,
   layout: layoutSlice.reducer,
   usuarios: usuariosSlice.reducer,
-  clientes: clientesSlice.reducer,
+  clientes: clientesReducer,
   prestamos: prestamosSlice.reducer,
   alertas: alertasReducer,
 });

@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal, Input } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { CardContent } from "../../../admin/components";
 import { ClientesForm } from "./components/ClientesForm";
 import { ClientesList } from "./components/ClientesList";
-import { addCliente, updateCliente, deleteCliente } from "./store/clientesSlice";
+import { fetchClientes, createCliente, updateCliente as updateClienteThunk, deleteCliente as deleteClienteThunk } from "./store/thunks";
 import "./styles.scss";
 
 const ClientesPage = () => {

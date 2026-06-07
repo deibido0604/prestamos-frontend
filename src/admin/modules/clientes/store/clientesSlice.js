@@ -1,31 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchClientes, createCliente, updateCliente as updateClienteThunk, deleteCliente as deleteClienteThunk } from './thunks';
 
-const mockClientes = [
-  {
-    id: "1",
-    nombreCompleto: "Carlos López Martínez",
-    cedula: "0801-1995-12345",
-    correo: "carlos@email.com",
-    telefono: "9876543210",
-    direccion: "Calle 5, Apartado 123, Tegucigalpa",
-    profesion: "Ingeniero",
-    referencias: "Juan Pérez",
-    estado: "activo",
-    fechaCreacion: "2024-02-10",
-  },
-  {
-    id: "2",
-    nombreCompleto: "Ana Rodríguez García",
-    cedula: "0801-1992-54321",
-    correo: "ana@email.com",
-    telefono: "9123456789",
-    direccion: "Avenida 10, Comayagüela",
-    profesion: "Contadora",
-    referencias: "María Gómez",
-    estado: "activo",
-    fechaCreacion: "2024-02-15",
-  },
-];
+const mockClientes = [];
 
 export const clientesSlice = createSlice({
   name: "clientes",
@@ -36,43 +12,37 @@ export const clientesSlice = createSlice({
     error: null,
   },
   reducers: {
-    setClientes: (state, action) => {
-      state.list = action.payload;
-    },
-    addCliente: (state, action) => {
-      state.list.push({
-        ...action.payload,
-        id: Date.now().toString(),
-        fechaCreacion: new Date().toISOString().split("T")[0],
-      });
-    },
-    updateCliente: (state, action) => {
-      const index = state.list.findIndex((c) => c.id === action.payload.id);
-      if (index !== -1) {
-        state.list[index] = action.payload;
-      }
-    },
-    deleteCliente: (state, action) => {
-      state.list = state.list.filter((c) => c.id !== action.payload);
-    },
     setSelectedCliente: (state, action) => {
       state.selectedCliente = action.payload;
     },
-    setLoading: (state, action) => {
-      state.loading = action.payload;
-    },
-    setError: (state, action) => {
-      state.error = action.payload;
-    },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchClientes.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchClientes.fulfilled, (state, action) => { state.loading = false; state.list = action.payload; })
+      .addCase(fetchClientes.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+
+      .addCase(createCliente.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(createCliente.fulfilled, (state, action) => { state.loading = false; state.list.unshift(action.payload); })
+      .addCase(createCliente.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+
+      .addCase(updateClienteThunk.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(updateClienteThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        const idx = state.list.findIndex(c => c.id === action.payload.id);
+        if (idx !== -1) state.list[idx] = action.payload;
+      })
+      .addCase(updateClienteThunk.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+
+      .addCase(deleteClienteThunk.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(deleteClienteThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.list = state.list.filter(c => c.id !== action.payload);
+      })
+      .addCase(deleteClienteThunk.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+  }
 });
 
-export const {
-  setClientes,
-  addCliente,
-  updateCliente,
-  deleteCliente,
-  setSelectedCliente,
-  setLoading,
-  setError,
-} = clientesSlice.actions;
+export const { setSelectedCliente } = clientesSlice.actions;
+
+export default clientesSlice.reducer;

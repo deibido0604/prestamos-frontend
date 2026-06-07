@@ -49,11 +49,10 @@ export const ClientesForm = ({ cliente, onSave, onCancel }) => {
         label="Correo Electrónico"
         name="correo"
         rules={[
-          { required: true, message: "Ingrese el correo" },
           { type: "email", message: "Correo inválido" },
         ]}
       >
-        <Input placeholder="cliente@email.com" />
+        <Input placeholder="cliente@email.com (opcional)" />
       </Form.Item>
 
       <Row gutter={16}>
