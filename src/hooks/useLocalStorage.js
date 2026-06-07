@@ -23,8 +23,27 @@ export default function useLocalStorage() {
     try {
       const encryptedValue = localStorage.getItem(key);
       if (!encryptedValue) return null;
-    } catch (error) {
 
+      const isEncrypted =
+        encryptedValue.includes(":") || encryptedValue.length > 100;
+
+      let decryptedValue = encryptedValue;
+      if (isEncrypted) {
+        const secret = import.meta.env.REACT_APP_SECRET || "default-secret-for-dev";
+        try {
+          decryptedValue = crypto.decryptString(encryptedValue, secret);
+        } catch (e) {
+          // fallback to raw value if decryption fails
+          decryptedValue = encryptedValue;
+        }
+      }
+
+      try {
+        return JSON.parse(decryptedValue);
+      } catch (parseErr) {
+        return decryptedValue;
+      }
+    } catch (error) {
       try {
         const rawValue = localStorage.getItem(key);
         return JSON.parse(rawValue);

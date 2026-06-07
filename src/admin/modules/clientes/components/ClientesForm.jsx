@@ -34,7 +34,7 @@ export const ClientesForm = ({ cliente, onSave, onCancel }) => {
         name="nombreCompleto"
         rules={[{ required: true, message: "Ingrese el nombre" }]}
       >
-        <Input placeholder="Carlos López Martínez" />
+        <Input placeholder="Ingrese el nombre completo" />
       </Form.Item>
 
       <Form.Item

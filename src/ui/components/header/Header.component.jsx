@@ -20,12 +20,24 @@ export const HeaderComponent = () => {
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
-    const mockAlertas = [
-      { id: 1, mensaje: "Préstamo vencido: Juan Pérez", fecha: "2025-03-20", leido: false },
-      { id: 2, mensaje: "Recordatorio: cuota de María López vence en 3 días", fecha: "2025-03-19", leido: false },
-      { id: 3, mensaje: "Nuevo préstamo aprobado", fecha: "2025-03-18", leido: true },
-    ];
-    setAlertas(mockAlertas);
+    // Fetch recent alertas from backend; fall back to empty list on error
+    const fetchAlertas = async () => {
+      try {
+        const base = (import.meta.env.VITE_API_URL) || "";
+        // API_BASE already contains /api-prestamos if configured, so call /alertas directly
+        const url = base ? `${base}/alertas` : `/api-prestamos/alertas`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("failed to fetch alertas");
+        const data = await res.json();
+        // expecting data as array (data.data or data)
+        const list = Array.isArray(data) ? data : data.data || [];
+        setAlertas(list);
+      } catch (err) {
+        setAlertas([]);
+        // console.error("Could not load alertas:", err);
+      }
+    };
+    fetchAlertas();
   }, []);
 
   const noLeidas = alertas.filter(a => !a.leido).length;

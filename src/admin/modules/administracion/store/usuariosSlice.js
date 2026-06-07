@@ -1,30 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const mockUsuarios = [
-  {
-    id: "1",
-    nombre: "Juan Pérez",
-    email: "juan@prestamos.com",
-    username: "juan",
-    rol: "admin",
-    activo: true,
-    fechaCreacion: "2024-01-15",
-  },
-  {
-    id: "2",
-    nombre: "María García",
-    email: "maria@prestamos.com",
-    username: "maria",
-    rol: "user",
-    activo: true,
-    fechaCreacion: "2024-01-20",
-  },
-];
-
+// Remove hardcoded users; use backend
 export const usuariosSlice = createSlice({
   name: "usuarios",
   initialState: {
-    list: mockUsuarios,
+    list: [],
     selectedUsuario: null,
     loading: false,
     error: null,

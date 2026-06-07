@@ -1,6 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { endpoints } from '@utils';
 
-const API = import.meta.env.VITE_API_URL || '';
+const API = endpoints.API_BASE || '';
+
 
 export const fetchClientes = createAsyncThunk('clientes/fetch', async (_, thunkAPI) => {
   try {

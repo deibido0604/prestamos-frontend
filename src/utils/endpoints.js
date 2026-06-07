@@ -1,25 +1,25 @@
-
-const API_URL = "https://prestamos-backend-ten.vercel.app/api-prestamos";
+// Centralized API base for all thunks and services
+export const API_BASE = import.meta.env.VITE_API_URL || "https://prestamos-backend-ten.vercel.app/api-prestamos";
 // For local development set VITE_API_URL=http://localhost:3000/api-prestamos in .env.local
 // For production set VITE_API_URL to your deployed backend URL in .env.production
 
 export const authUrl = {
-  login: `${API_URL}/systemUsers/login`,
-  logout: `${API_URL}/systemUsers/logout`,
+  login: `${API_BASE}/systemUsers/login`,
+  logout: `${API_BASE}/systemUsers/logout`,
 };
 
 export const roleUrl = {
-  byId: `${API_URL}/roles`,
-  list: `${API_URL}/roles/list`,
-  delete: `${API_URL}/roles/delete`,
-  create: `${API_URL}/roles/create`,
-  update: `${API_URL}/roles/update`,
+  byId: `${API_BASE}/roles`,
+  list: `${API_BASE}/roles/list`,
+  delete: `${API_BASE}/roles/delete`,
+  create: `${API_BASE}/roles/create`,
+  update: `${API_BASE}/roles/update`,
 };
 
 export const permissionUrl = {
-  byId: `${API_URL}/permission`,
-  list: `${API_URL}/permission/list`,
-  delete: `${API_URL}/permission/delete`,
-  create: `${API_URL}/permission/create`,
-  update: `${API_URL}/permission/update`,
+  byId: `${API_BASE}/permission`,
+  list: `${API_BASE}/permission/list`,
+  delete: `${API_BASE}/permission/delete`,
+  create: `${API_BASE}/permission/create`,
+  update: `${API_BASE}/permission/update`,
 };

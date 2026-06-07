@@ -5,7 +5,7 @@ import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { CardContent } from "../../../admin/components";
 import { ClientesForm } from "./components/ClientesForm";
 import { ClientesList } from "./components/ClientesList";
-import { fetchClientes, createCliente, updateCliente as updateClienteThunk, deleteCliente as deleteClienteThunk } from "./store/thunks";
+import { fetchClientes, createCliente, updateCliente, deleteCliente } from "./store/thunks";
 import "./styles.scss";
 
 const ClientesPage = () => {
@@ -51,9 +51,10 @@ const ClientesPage = () => {
 
   const handleSaveCliente = (values) => {
     if (editingCliente) {
-      dispatch(updateCliente({ ...editingCliente, ...values }));
+      // updateCliente expects { id, changes }
+      dispatch(updateCliente({ id: editingCliente.id, changes: values }));
     } else {
-      dispatch(addCliente(values));
+      dispatch(createCliente(values));
     }
     handleModalClose();
   };

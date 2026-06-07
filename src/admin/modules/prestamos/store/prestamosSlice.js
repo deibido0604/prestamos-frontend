@@ -1,38 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const mockPrestamos = [
-  {
-    id: "1",
-    clienteId: "1",
-    cliente: "Carlos López Martínez",
-    montoLps: 50000,
-    tasaInteres: 15,
-    plazoMeses: 12,
-    fechaInicio: "2024-02-01",
-    concepto: "Mejora de vivienda",
-    estado: "activo",
-    interesTotal: 7500,
-    montoMensual: 4791.67,
-  },
-  {
-    id: "2",
-    clienteId: "2",
-    cliente: "Ana Rodríguez García",
-    montoLps: 30000,
-    tasaInteres: 12,
-    plazoMeses: 6,
-    fechaInicio: "2024-02-15",
-    concepto: "Capital de trabajo",
-    estado: "activo",
-    interesTotal: 1800,
-    montoMensual: 5300,
-  },
-];
-
+// Use backend data; remove hardcoded mocks
 export const prestamosSlice = createSlice({
   name: "prestamos",
   initialState: {
-    list: mockPrestamos,
+    list: [],
     selectedPrestamo: null,
     loading: false,
     error: null,

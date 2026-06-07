@@ -1,7 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { endpoints } from '@utils';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api-prestamos';
+const API_URL = endpoints.API_BASE || '';
 
 export const fetchAlertas = createAsyncThunk(
   'alertas/fetchAll',
