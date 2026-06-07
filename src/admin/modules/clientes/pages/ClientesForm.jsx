@@ -39,6 +39,7 @@ const ClientesForm = ({ cliente, onSuccess, onCancel, t }) => {
           setReferencias(completas);
         }
       } catch (e) {
+        console.warn("Error parsing referencias al cargar cliente:", e);
         setReferencias([
           { nombre: "", telefono: "" },
           { nombre: "", telefono: "" },

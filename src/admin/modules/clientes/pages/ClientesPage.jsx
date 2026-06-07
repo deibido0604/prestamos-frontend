@@ -3,7 +3,8 @@ import { useTranslate, useMountEffect } from "@hooks";
 import { permissions } from "@utils";
 import { PageTitle, Card } from "@components";
 import { useDispatch, useSelector } from "react-redux";
-import { Modal, message } from "antd";
+import { Modal, message, Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { fetchClientesAction, deleteClienteAction } from "../store/thunks";
 import { clearClientesState } from "../store/clientesSlice";
 import ClientesTable from "../components/ClientesTable";
@@ -49,7 +50,7 @@ const ClientesPage = () => {
   const handleModalSuccess = () => {
     setModalVisible(false);
     setEditingCliente(null);
-    dispatch(fetchClientesAction()); // recargar lista después de guardar
+    dispatch(fetchClientesAction());
   };
 
   const handleModalCancel = () => {
@@ -86,7 +87,7 @@ const ClientesPage = () => {
         onCancel={handleModalCancel}
         footer={null}
         destroyOnClose
-        width={600}
+        width={800}
       >
         <ClientesForm
           cliente={editingCliente}

@@ -1,12 +1,55 @@
-import { Space, Table, Tag, Button, Popconfirm, Card, Typography } from "antd";
+import { Space, Table, Tag, Button, Popconfirm, Card, Typography, Row, Col } from "antd";
 import { EditOutlined, DeleteOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
 import { permissions } from "@utils";
 import { Can } from "@components";
 
 const { Text } = Typography;
 
+// Componente de vista móvil (definido FUERA del componente principal)
+const MobileCardView = ({ data, onEdit, onDelete, renderReferencias, t }) => (
+  <Row gutter={[16, 16]}>
+    {data.map((cliente) => (
+      <Col xs={24} key={cliente.id}>
+        <Card
+          hoverable
+          className="cliente-card"
+          actions={[
+            <Button type="link" icon={<EditOutlined />} onClick={() => onEdit(cliente)}>
+              {t("clientes.edit")}
+            </Button>,
+            <Popconfirm
+              title={t("popConfirm.eliminate")}
+              description={t("clientes.delete_confirm")}
+              onConfirm={() => onDelete(cliente.id)}
+              okText={t("common.yes")}
+              cancelText={t("common.no")}
+            >
+              <Button type="link" danger icon={<DeleteOutlined />}>
+                {t("common.delete")}
+              </Button>
+            </Popconfirm>
+          ]}
+        >
+          <Card.Meta
+            title={cliente.nombreCompleto}
+            description={
+              <Space direction="vertical" size="small">
+                <div><strong>{t("clientes.cedula")}:</strong> {cliente.cedula}</div>
+                <div><strong>{t("clientes.telefono")}:</strong> {cliente.telefono}</div>
+                <div><strong>{t("clientes.correo")}:</strong> {cliente.correo || "-"}</div>
+                <div><strong>{t("clientes.estado")}:</strong> <Tag color={cliente.estado === "activo" ? "green" : "red"}>{cliente.estado === "activo" ? t("clientes.active") : t("clientes.inactive")}</Tag></div>
+                <div><strong>{t("clientes.referencias")}:</strong> {renderReferencias(cliente.referencias)}</div>
+              </Space>
+            }
+          />
+        </Card>
+      </Col>
+    ))}
+  </Row>
+);
+
 const ClientesTable = ({ data, loading, onEdit, onDelete, t }) => {
-  // Formatear referencias para mostrar
+  // Formatear referencias para mostrar (función auxiliar)
   const renderReferencias = (referencias) => {
     if (!referencias) return "-";
     let refs = [];
@@ -25,6 +68,7 @@ const ClientesTable = ({ data, loading, onEdit, onDelete, t }) => {
         refs = referencias;
       }
     } catch (e) {
+      console.error("Error parsing referencias:", e);
       refs = [];
     }
     if (refs.length === 0) return "-";
@@ -73,14 +117,27 @@ const ClientesTable = ({ data, loading, onEdit, onDelete, t }) => {
   ];
 
   return (
-    <Table
-      columns={columns}
-      dataSource={data}
-      loading={loading}
-      rowKey="id"
-      pagination={{ showTotal: (total) => `${t("clientes.total")}: ${total}`, pageSize: 10, showSizeChanger: true }}
-      scroll={{ x: 1000 }}
-    />
+    <>
+      <div className="desktop-view">
+        <Table
+          columns={columns}
+          dataSource={data}
+          loading={loading}
+          rowKey="id"
+          pagination={{ showTotal: (total) => `${t("clientes.total")}: ${total}`, pageSize: 10, showSizeChanger: true }}
+          scroll={{ x: 1000 }}
+        />
+      </div>
+      <div className="mobile-view">
+        <MobileCardView
+          data={data}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          renderReferencias={renderReferencias}
+          t={t}
+        />
+      </div>
+    </>
   );
 };
 
