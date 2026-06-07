@@ -220,13 +220,6 @@ const LoginPage = () => {
               />
             </Form.Item>
 
-            {/* Información de demo */}
-            <div className="login-demo-info">
-              <p>
-                <strong>Demo:</strong> Usuario: <code>admin</code> | Contraseña: <code>admin123</code>
-              </p>
-            </div>
-
             {/* Botón de login */}
             <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
               <Button

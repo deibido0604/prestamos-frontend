@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchClientes, createCliente, updateCliente as updateClienteThunk, deleteCliente as deleteClienteThunk } from './thunks';
+import { fetchClientes, createCliente, updateCliente, deleteCliente } from './thunks';
 
 const mockClientes = [];
 
@@ -26,20 +26,20 @@ export const clientesSlice = createSlice({
       .addCase(createCliente.fulfilled, (state, action) => { state.loading = false; state.list.unshift(action.payload); })
       .addCase(createCliente.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
-      .addCase(updateClienteThunk.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(updateClienteThunk.fulfilled, (state, action) => {
+      .addCase(updateCliente.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(updateCliente.fulfilled, (state, action) => {
         state.loading = false;
         const idx = state.list.findIndex(c => c.id === action.payload.id);
         if (idx !== -1) state.list[idx] = action.payload;
       })
-      .addCase(updateClienteThunk.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+      .addCase(updateCliente.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
-      .addCase(deleteClienteThunk.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(deleteClienteThunk.fulfilled, (state, action) => {
+      .addCase(deleteCliente.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(deleteCliente.fulfilled, (state, action) => {
         state.loading = false;
         state.list = state.list.filter(c => c.id !== action.payload);
       })
-      .addCase(deleteClienteThunk.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+      .addCase(deleteCliente.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
   }
 });
 
