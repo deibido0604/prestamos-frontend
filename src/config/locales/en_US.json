@@ -12,7 +12,6 @@
   "dashboard.hello": "Hello",
   "dashboard.time": "Your login time is:",
   "button.add": "Add",
-
   "clientes.title": "Client Management",
   "clientes.list_title": "Client List",
   "clientes.new": "New Client",
@@ -44,12 +43,19 @@
   "clientes.direccion_placeholder": "Street, number, colony",
   "clientes.lugar_trabajo_placeholder": "Company ABC",
   "clientes.referencias_placeholder": "Name and contact of references",
-
+  "clientes.ref_nombre": "Name",
+  "clientes.ref_telefono": "Phone",
+  "clientes.add_referencia": "Add reference",
+  "clientes.complete_referencias": "Complete name and phone for all references",
+  "clientes.min_referencias": "At least 3 references required",
+  "clientes.min_referencias_error": "Minimum 3 references required",
+  "clientes.min_referencias_info": "Minimum 3 references. You can add more.",
+  "clientes.ref_nombre_placeholder": "e.g. John Doe",
+  "common.delete": "Delete",
   "common.yes": "Yes",
   "common.no": "No",
   "common.create": "Create",
   "common.update": "Update",
   "common.cancel": "Cancel",
-
   "popConfirm.eliminate": "Delete"
 }

@@ -12,7 +12,6 @@
   "dashboard.hello": "Hola",
   "dashboard.time": "Tu hora de ingreso es:",
   "button.add": "Agregar",
-
   "clientes.title": "Gestión de Clientes",
   "clientes.list_title": "Listado de Clientes",
   "clientes.new": "Nuevo Cliente",
@@ -44,12 +43,19 @@
   "clientes.direccion_placeholder": "Calle, número, colonia",
   "clientes.lugar_trabajo_placeholder": "Empresa ABC",
   "clientes.referencias_placeholder": "Nombre y contacto de referencias",
-
+  "clientes.ref_nombre": "Nombre",
+  "clientes.ref_telefono": "Teléfono",
+  "clientes.add_referencia": "Agregar referencia",
+  "clientes.complete_referencias": "Complete nombre y teléfono de todas las referencias",
+  "clientes.min_referencias": "Debe tener al menos 3 referencias",
+  "clientes.min_referencias_error": "Mínimo 3 referencias requeridas",
+  "clientes.min_referencias_info": "Mínimo 3 referencias. Puede agregar más.",
+  "clientes.ref_nombre_placeholder": "Ej: Juan Pérez",
+  "common.delete": "Eliminar",
   "common.yes": "Sí",
   "common.no": "No",
   "common.create": "Crear",
   "common.update": "Actualizar",
   "common.cancel": "Cancelar",
-
   "popConfirm.eliminate": "Eliminar"
 }

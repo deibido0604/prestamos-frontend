@@ -1,4 +1,5 @@
-import { Form, Input, Button, Select, Row, Col, InputNumber, Space, message } from "antd";
+import { Form, Input, Button, Select, Row, Col, InputNumber, Space, message, Card } from "antd";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { createClienteAction, updateClienteAction } from "../store/thunks";
@@ -9,50 +10,99 @@ const ClientesForm = ({ cliente, onSuccess, onCancel, t }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [referencias, setReferencias] = useState([]);
   const isEdit = !!cliente;
 
+  // Cargar referencias existentes o inicializar con 3 vacías
   useEffect(() => {
-    if (cliente) {
-      form.setFieldsValue({
-        nombreCompleto: cliente.nombreCompleto,
-        cedula: cliente.cedula,
-        correo: cliente.correo,
-        telefono: cliente.telefono,
-        telefonoSecundario: cliente.telefonoSecundario,
-        direccion: cliente.direccion,
-        profesion: cliente.profesion,
-        lugarTrabajo: cliente.lugarTrabajo,
-        antiguedad: cliente.antiguedad,
-        referencias: cliente.referencias,
-        estado: cliente.estado,
-      });
+    if (cliente && cliente.referencias) {
+      try {
+        let refs = [];
+        if (typeof cliente.referencias === "string") {
+          if (cliente.referencias.startsWith("[")) {
+            refs = JSON.parse(cliente.referencias);
+          } else {
+            const lines = cliente.referencias.split("\n");
+            refs = lines.map(line => {
+              const [nombre, telefono] = line.split(":").map(s => s.trim());
+              return { nombre, telefono };
+            }).filter(r => r.nombre);
+          }
+        } else if (Array.isArray(cliente.referencias)) {
+          refs = cliente.referencias;
+        }
+        if (refs.length >= 3) {
+          setReferencias(refs);
+        } else {
+          const completas = [...refs];
+          while (completas.length < 3) completas.push({ nombre: "", telefono: "" });
+          setReferencias(completas);
+        }
+      } catch (e) {
+        setReferencias([
+          { nombre: "", telefono: "" },
+          { nombre: "", telefono: "" },
+          { nombre: "", telefono: "" },
+        ]);
+      }
     } else {
-      form.resetFields();
-      form.setFieldsValue({ estado: "activo" });
+      // Nuevo cliente: 3 filas vacías
+      setReferencias([
+        { nombre: "", telefono: "" },
+        { nombre: "", telefono: "" },
+        { nombre: "", telefono: "" },
+      ]);
     }
-  }, [cliente, form]);
+  }, [cliente]);
+
+  const addReferencia = () => {
+    setReferencias([...referencias, { nombre: "", telefono: "" }]);
+  };
+
+  const removeReferencia = (index) => {
+    if (referencias.length <= 3) {
+      message.warning(t("clientes.min_referencias"));
+      return;
+    }
+    const newRefs = referencias.filter((_, i) => i !== index);
+    setReferencias(newRefs);
+  };
+
+  const updateReferencia = (index, field, value) => {
+    const newRefs = [...referencias];
+    newRefs[index][field] = value;
+    setReferencias(newRefs);
+  };
 
   const onFinish = async (values) => {
-    console.log("📝 Formulario enviado, valores:", values);
+    // Validar que todas las referencias tengan nombre y teléfono
+    const invalidRef = referencias.some(ref => !ref.nombre || !ref.telefono);
+    if (invalidRef) {
+      message.error(t("clientes.complete_referencias"));
+      return;
+    }
+    if (referencias.length < 3) {
+      message.error(t("clientes.min_referencias_error"));
+      return;
+    }
+
+    const payload = {
+      ...values,
+      referencias: JSON.stringify(referencias),
+    };
+
     setLoading(true);
     try {
       if (isEdit) {
-        console.log("✏️ Editando cliente:", cliente.id, values);
-        const result = await dispatch(updateClienteAction({ id: cliente.id, changes: values })).unwrap();
-        console.log("✅ Cliente actualizado:", result);
+        await dispatch(updateClienteAction({ id: cliente.id, changes: payload })).unwrap();
         message.success(t("clientes.update_success"));
       } else {
-        console.log("➕ Creando cliente:", values);
-        const result = await dispatch(createClienteAction(values)).unwrap();
-        console.log("✅ Cliente creado:", result);
+        await dispatch(createClienteAction(payload)).unwrap();
         message.success(t("clientes.create_success"));
       }
-      onSuccess(); // cierra modal y recarga lista
+      onSuccess();
     } catch (err) {
-      console.error("❌ Error en ClientesForm:", err);
-      // Intenta extraer el mensaje de error de diferentes formas
-      const errorMsg = err?.response?.data?.message || err?.message || err?.toString() || (isEdit ? t("clientes.update_error") : t("clientes.create_error"));
-      message.error(errorMsg);
+      message.error(err || (isEdit ? t("clientes.update_error") : t("clientes.create_error")));
     } finally {
       setLoading(false);
     }
@@ -72,6 +122,7 @@ const ClientesForm = ({ cliente, onSuccess, onCancel, t }) => {
           </Form.Item>
         </Col>
       </Row>
+
       <Row gutter={16}>
         <Col xs={24} sm={12}>
           <Form.Item name="correo" label={t("clientes.correo")} rules={[{ type: "email" }]}>
@@ -84,6 +135,7 @@ const ClientesForm = ({ cliente, onSuccess, onCancel, t }) => {
           </Form.Item>
         </Col>
       </Row>
+
       <Row gutter={16}>
         <Col xs={24} sm={12}>
           <Form.Item name="telefonoSecundario" label={t("clientes.telefono_secundario")}>
@@ -96,9 +148,11 @@ const ClientesForm = ({ cliente, onSuccess, onCancel, t }) => {
           </Form.Item>
         </Col>
       </Row>
+
       <Form.Item name="direccion" label={t("clientes.direccion")}>
         <Input.TextArea rows={2} placeholder={t("clientes.direccion_placeholder")} />
       </Form.Item>
+
       <Row gutter={16}>
         <Col xs={24} sm={12}>
           <Form.Item name="lugarTrabajo" label={t("clientes.lugar_trabajo")}>
@@ -111,15 +165,57 @@ const ClientesForm = ({ cliente, onSuccess, onCancel, t }) => {
           </Form.Item>
         </Col>
       </Row>
-      <Form.Item name="referencias" label={t("clientes.referencias")}>
-        <Input.TextArea rows={2} placeholder={t("clientes.referencias_placeholder")} />
-      </Form.Item>
+
+      {/* Referencias dinámicas */}
+      <div className="referencias-section">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <h4>{t("clientes.referencias")}</h4>
+          <Button type="dashed" icon={<PlusOutlined />} onClick={addReferencia}>
+            {t("clientes.add_referencia")}
+          </Button>
+        </div>
+
+        {referencias.map((ref, idx) => (
+          <Row key={idx} gutter={16} style={{ marginBottom: 16 }} align="middle">
+            <Col xs={24} sm={10}>
+              <Input
+                placeholder={t("clientes.ref_nombre_placeholder")}
+                value={ref.nombre}
+                onChange={(e) => updateReferencia(idx, "nombre", e.target.value)}
+              />
+            </Col>
+            <Col xs={24} sm={10}>
+              <Input
+                placeholder="Teléfono"
+                value={ref.telefono}
+                onChange={(e) => updateReferencia(idx, "telefono", e.target.value)}
+              />
+            </Col>
+            <Col xs={24} sm={4} style={{ textAlign: "right" }}>
+              <Button
+                type="link"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => removeReferencia(idx)}
+                disabled={referencias.length <= 3}
+              >
+                {t("common.delete")}
+              </Button>
+            </Col>
+          </Row>
+        ))}
+        <div style={{ marginTop: 8, color: "#888" }}>
+          {t("clientes.min_referencias_info")}
+        </div>
+      </div>
+
       <Form.Item name="estado" label={t("clientes.estado")}>
         <Select>
           <Option value="activo">{t("clientes.active")}</Option>
           <Option value="inactivo">{t("clientes.inactive")}</Option>
         </Select>
       </Form.Item>
+
       <Form.Item>
         <Space>
           <Button type="primary" htmlType="submit" loading={loading}>

@@ -122,7 +122,6 @@ $border-radius: 12px;
     }
   }
 
-  // ========== CONTENEDOR DE ACCIONES (buscador + botón) ==========
   .header-actions {
     display: flex;
     gap: 12px;
@@ -485,5 +484,40 @@ $border-radius: 12px;
         background: $text-light !important;
       }
     }
+  }
+}
+// ==================== REFERENCIAS SECTION (versión fija) ====================
+.referencias-section {
+  margin: 20px 0;
+  padding: 16px;
+  background: rgba($primary-color, 0.03);
+  border-radius: $border-radius;
+  border: 1px solid rgba($primary-color, 0.1);
+
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: $secondary-color;
+    margin: 0;
+  }
+
+  .ant-row {
+    margin-bottom: 16px;
+
+    @media (max-width: 768px) {
+      .ant-col {
+        margin-bottom: 8px;
+        text-align: left !important;
+      }
+      button {
+        width: 100%;
+        margin-top: 8px;
+      }
+    }
+  }
+
+  button.ant-btn-link {
+    color: $danger;
+    font-weight: 500;
   }
 }
