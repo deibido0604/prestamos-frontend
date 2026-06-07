@@ -1,6 +1,5 @@
 // Base URL del backend (desde variable de entorno o por defecto)
 const API_URL = import.meta.env.VITE_API_URL || "https://prestamos-backend-ten.vercel.app/api-prestamos";
-// Para desarrollo local: crear .env.local con VITE_API_URL=http://localhost:3000/api-prestamos
 
 // ==============================
 // AUTENTICACIÓN
