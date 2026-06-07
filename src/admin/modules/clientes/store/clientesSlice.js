@@ -1,48 +1,73 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchClientes, createCliente, updateCliente, deleteCliente } from './thunks';
+import {
+  fetchClientesAction,
+  fetchClienteByIdAction,
+  createClienteAction,
+  updateClienteAction,
+  deleteClienteAction,
+} from "./thunks";
 
-const mockClientes = [];
+const initialState = {
+  clientesList: [],
+  clienteDetail: null,
+  isLoading: false,
+  error: null,
+};
 
-export const clientesSlice = createSlice({
+const clientesSlice = createSlice({
   name: "clientes",
-  initialState: {
-    list: mockClientes,
-    selectedCliente: null,
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
-    setSelectedCliente: (state, action) => {
-      state.selectedCliente = action.payload;
+    clearClientesState: () => initialState,
+    clearClientesError: (state) => {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchClientes.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(fetchClientes.fulfilled, (state, action) => { state.loading = false; state.list = action.payload; })
-      .addCase(fetchClientes.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-
-      .addCase(createCliente.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(createCliente.fulfilled, (state, action) => { state.loading = false; state.list.unshift(action.payload); })
-      .addCase(createCliente.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-
-      .addCase(updateCliente.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(updateCliente.fulfilled, (state, action) => {
-        state.loading = false;
-        const idx = state.list.findIndex(c => c.id === action.payload.id);
-        if (idx !== -1) state.list[idx] = action.payload;
-      })
-      .addCase(updateCliente.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-
-      .addCase(deleteCliente.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(deleteCliente.fulfilled, (state, action) => {
-        state.loading = false;
-        state.list = state.list.filter(c => c.id !== action.payload);
-      })
-      .addCase(deleteCliente.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
-  }
+    // Fetch all
+    builder.addCase(fetchClientesAction.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchClientesAction.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.clientesList = action.payload;
+    });
+    builder.addCase(fetchClientesAction.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    });
+    // Fetch by id
+    builder.addCase(fetchClienteByIdAction.pending, (state) => {
+      state.isLoading = true;
+      state.clienteDetail = null;
+    });
+    builder.addCase(fetchClienteByIdAction.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.clienteDetail = action.payload;
+    });
+    builder.addCase(fetchClienteByIdAction.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    });
+    // Create
+    builder.addCase(createClienteAction.fulfilled, (state, action) => {
+      state.clientesList.unshift(action.payload);
+    });
+    // Update
+    builder.addCase(updateClienteAction.fulfilled, (state, action) => {
+      const index = state.clientesList.findIndex(c => c.id === action.payload.id);
+      if (index !== -1) state.clientesList[index] = action.payload;
+      if (state.clienteDetail?.id === action.payload.id) {
+        state.clienteDetail = action.payload;
+      }
+    });
+    // Delete
+    builder.addCase(deleteClienteAction.fulfilled, (state, action) => {
+      state.clientesList = state.clientesList.filter(c => c.id !== action.payload);
+    });
+  },
 });
 
-export const { setSelectedCliente } = clientesSlice.actions;
-
+export const { clearClientesState, clearClientesError } = clientesSlice.actions;
 export default clientesSlice.reducer;

@@ -14,7 +14,7 @@ const rootReducer = combineReducers({
   config: configSlice.reducer,
   layout: layoutSlice.reducer,
   usuarios: usuariosSlice.reducer,
-  clientes: clientesReducer,
+  clientes: clientesReducer.reducer,
   prestamos: prestamosSlice.reducer,
   alertas: alertasReducer,
 });
