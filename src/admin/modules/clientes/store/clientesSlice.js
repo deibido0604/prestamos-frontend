@@ -70,4 +70,4 @@ const clientesSlice = createSlice({
 });
 
 export const { clearClientesState, clearClientesError } = clientesSlice.actions;
-export default clientesSlice.reducer;
+export default clientesSlice;

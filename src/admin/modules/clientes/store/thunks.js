@@ -3,6 +3,8 @@ import { useApi } from "@hooks";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { endpoints } from "@utils";
 
+import axios from "axios";
+
 const { callService } = useApi();
 
 const normalizeClient = (client) => ({
@@ -47,10 +49,19 @@ export const fetchClienteByIdAction = createAsyncThunk(
 export const createClienteAction = createAsyncThunk(
   "clientes/create",
   async (payload, { rejectWithValue }) => {
-    return await callService({
-      url: endpoints.clientes.create,
-      errorCallback: rejectWithValue,
-    }).post(payload).then(data => normalizeClient(data));
+    try {
+      console.log("📤 Enviando payload al backend:", payload);
+      const response = await axios.post(`${endpoints.API_URL}/clientes`, payload);
+      console.log("✅ Respuesta del backend:", response.data);
+      return normalizeClient(response.data.data);
+    } catch (error) {
+      console.error("❌ Error en createClienteAction:", error);
+      if (error.response) {
+        console.error("📄 Detalle del error:", error.response.data);
+        return rejectWithValue(error.response.data?.message || error.message);
+      }
+      return rejectWithValue(error.message);
+    }
   }
 );
 
