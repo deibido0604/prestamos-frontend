@@ -1,10 +1,11 @@
+// src/admin/modules/clientes/store/thunks.js
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Obtén la URL base desde las variables de entorno o usa localhost
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001/api-prestamos";
 
-// Normaliza el cliente (convierte snake_case a camelCase)
+// Normaliza el cliente (convierte snake_case a camelCase para el frontend)
 const normalizeClient = (client) => ({
   id: client.id,
   nombreCompleto: client.nombrecompleto,
@@ -21,16 +22,7 @@ const normalizeClient = (client) => ({
   fechaCreacion: client.created_at,
 });
 
-// Convierte camelCase a snake_case para enviar al backend
-const toSnakeCase = (obj) => {
-  const result = {};
-  for (const key in obj) {
-    const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-    result[snakeKey] = obj[key];
-  }
-  return result;
-};
-
+// Obtener todos los clientes
 export const fetchClientesAction = createAsyncThunk(
   "clientes/fetchAll",
   async (_, { rejectWithValue }) => {
@@ -45,6 +37,7 @@ export const fetchClientesAction = createAsyncThunk(
   }
 );
 
+// Obtener un cliente por ID
 export const fetchClienteByIdAction = createAsyncThunk(
   "clientes/fetchById",
   async (id, { rejectWithValue }) => {
@@ -57,19 +50,19 @@ export const fetchClienteByIdAction = createAsyncThunk(
   }
 );
 
+// Crear cliente (envía el payload directamente, sin conversión a snake_case)
 export const createClienteAction = createAsyncThunk(
   "clientes/create",
   async (payload, { rejectWithValue }) => {
     try {
-      const snakePayload = toSnakeCase(payload);
-      console.log("📤 Enviando:", snakePayload);
-      const response = await axios.post(`${API_BASE}/clientes`, snakePayload);
+      console.log("📤 Enviando payload al backend:", payload);
+      const response = await axios.post(`${API_BASE}/clientes`, payload);
       console.log("✅ Respuesta:", response.data);
       return normalizeClient(response.data.data);
     } catch (error) {
-      console.error("❌ Error detallado:", error);
+      console.error("❌ Error en createClienteAction:", error);
       if (error.response) {
-        console.error("📄 Respuesta del backend:", error.response.data);
+        console.error("📄 Detalle del error:", error.response.data);
         return rejectWithValue(error.response.data?.message || error.message);
       }
       return rejectWithValue(error.message);
@@ -77,19 +70,25 @@ export const createClienteAction = createAsyncThunk(
   }
 );
 
+// Actualizar cliente (envía los cambios directamente, sin conversión)
 export const updateClienteAction = createAsyncThunk(
   "clientes/update",
   async ({ id, changes }, { rejectWithValue }) => {
     try {
-      const snakeChanges = toSnakeCase(changes);
-      const response = await axios.put(`${API_BASE}/clientes/${id}`, snakeChanges);
+      console.log("✏️ Enviando cambios para actualizar:", changes);
+      const response = await axios.put(`${API_BASE}/clientes/${id}`, changes);
       return normalizeClient(response.data.data);
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      console.error("❌ Error en updateClienteAction:", error);
+      if (error.response) {
+        return rejectWithValue(error.response.data?.message || error.message);
+      }
+      return rejectWithValue(error.message);
     }
   }
 );
 
+// Eliminar cliente
 export const deleteClienteAction = createAsyncThunk(
   "clientes/delete",
   async (id, { rejectWithValue }) => {
@@ -97,7 +96,11 @@ export const deleteClienteAction = createAsyncThunk(
       await axios.delete(`${API_BASE}/clientes/${id}`);
       return id;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      console.error("❌ Error en deleteClienteAction:", error);
+      if (error.response) {
+        return rejectWithValue(error.response.data?.message || error.message);
+      }
+      return rejectWithValue(error.message);
     }
   }
 );
