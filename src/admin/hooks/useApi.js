@@ -4,7 +4,7 @@ import { endpoints } from '@utils';
 
 export const useApi = () => {
   const axiosInstance = axios.create({
-    baseURL: endpoints.API_BASE || 'http://localhost:3000/api-prestamos',
+    baseURL: endpoints.API_BASE || 'http://localhost:3001/api-prestamos',
     headers: { 'Content-Type': 'application/json' },
   });
 

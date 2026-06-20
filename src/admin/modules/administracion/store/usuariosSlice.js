@@ -1,52 +1,52 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {
+  fetchUsuariosAction,
+  createUsuarioAction,
+  updateUsuarioAction,
+  deleteUsuarioAction,
+} from "./thunks";
 
-// Remove hardcoded users; use backend
-export const usuariosSlice = createSlice({
+const initialState = {
+  list: [],
+  isLoading: false,
+  error: null,
+};
+
+const usuariosSlice = createSlice({
   name: "usuarios",
-  initialState: {
-    list: [],
-    selectedUsuario: null,
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
-    setUsuarios: (state, action) => {
-      state.list = action.payload;
+    clearUsuariosError: (state) => {
+      state.error = null;
     },
-    addUsuario: (state, action) => {
-      state.list.push({
-        ...action.payload,
-        id: Date.now().toString(),
-        fechaCreacion: new Date().toISOString().split("T")[0],
+    clearUsuariosState: () => initialState,
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUsuariosAction.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchUsuariosAction.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.list = action.payload;
+      })
+      .addCase(fetchUsuariosAction.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(createUsuarioAction.fulfilled, (state, action) => {
+        state.list.unshift(action.payload);
+      })
+      .addCase(updateUsuarioAction.fulfilled, (state, action) => {
+        const index = state.list.findIndex((u) => u.id === action.payload.id);
+        if (index !== -1) state.list[index] = action.payload;
+      })
+      .addCase(deleteUsuarioAction.fulfilled, (state, action) => {
+        state.list = state.list.filter((u) => u.id !== action.payload);
       });
-    },
-    updateUsuario: (state, action) => {
-      const index = state.list.findIndex((u) => u.id === action.payload.id);
-      if (index !== -1) {
-        state.list[index] = action.payload;
-      }
-    },
-    deleteUsuario: (state, action) => {
-      state.list = state.list.filter((u) => u.id !== action.payload);
-    },
-    setSelectedUsuario: (state, action) => {
-      state.selectedUsuario = action.payload;
-    },
-    setLoading: (state, action) => {
-      state.loading = action.payload;
-    },
-    setError: (state, action) => {
-      state.error = action.payload;
-    },
   },
 });
 
-export const {
-  setUsuarios,
-  addUsuario,
-  updateUsuario,
-  deleteUsuario,
-  setSelectedUsuario,
-  setLoading,
-  setError,
-} = usuariosSlice.actions;
+export const { clearUsuariosError, clearUsuariosState } = usuariosSlice.actions;
+export default usuariosSlice;

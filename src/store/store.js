@@ -5,7 +5,8 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import { configSlice } from "../config/store/configSlice";
 import { layoutSlice } from "../admin/layout/store/layoutSlice";
-import { usuariosSlice } from "../admin/modules/administracion/store/usuariosSlice";
+import usuariosSlice  from "../admin/modules/administracion/store/usuariosSlice";
+import rolesSlice from "../admin/modules/administracion/store/rolesSlice";
 import clientesReducer from "../admin/modules/clientes/store/clientesSlice";
 import { prestamosSlice } from "../admin/modules/prestamos/store/prestamosSlice";
 import alertasReducer from "../admin/modules/alertas/store/alertasSlice";
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   config: configSlice.reducer,
   layout: layoutSlice.reducer,
   usuarios: usuariosSlice.reducer,
+  roles: rolesSlice.reducer,
   clientes: clientesReducer.reducer,
   prestamos: prestamosSlice.reducer,
   alertas: alertasReducer,
@@ -22,7 +24,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["config", "layout", "usuarios", "clientes", "prestamos", "alertas"],
+  whitelist: ["config", "layout", "usuarios", "roles", "clientes", "prestamos", "alertas"],
 };
 
 export const RESET_STORE = "RESET_STORE";

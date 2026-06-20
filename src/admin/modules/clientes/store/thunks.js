@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api-prestamos";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001/api-prestamos";
 
 // Normaliza el cliente (convierte snake_case a camelCase)
 const normalizeClient = (client) => ({

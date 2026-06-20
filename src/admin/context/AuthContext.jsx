@@ -38,7 +38,7 @@ const AuthProvider = ({ children }) => {
   const [initializing, setInitializing] = useState(true);
 
   // ✅ Base URL desde variables de entorno
-  const API_BASE_URL = "https://prestamos-backend-ten.vercel.app/api-prestamos";
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "https://prestamos-backend-ten.vercel.app/api-prestamos";
 
   // =========================
   // INIT AUTH
@@ -70,7 +70,7 @@ const AuthProvider = ({ children }) => {
             navigate("/main", { replace: true });
           }
         } else {
-          const publicPaths = ["/auth/login", "/auth/register"];
+          const publicPaths = ["/auth/login", "/auth/register", "/auth/reset-password"];
           const path = window.location.pathname;
 
           if (!publicPaths.includes(path)) {
