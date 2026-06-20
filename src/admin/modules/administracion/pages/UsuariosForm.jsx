@@ -36,6 +36,7 @@ const UsuariosForm = ({ usuario, onSuccess, onCancel, t }) => {
     setResetToken(null);
   }, [usuario, form]);
 
+
   const onFinish = async (values) => {
     setLoading(true);
     try {
@@ -93,9 +94,11 @@ const UsuariosForm = ({ usuario, onSuccess, onCancel, t }) => {
       <Form.Item name="name" label={t("usuarios.nombre")} rules={[{ required: true }]}>
         <Input placeholder="Juan Pérez" />
       </Form.Item>
-      <Form.Item name="username" label={t("usuarios.username")} rules={[{ required: true }]}>
-        <Input placeholder="usuario123" />
-      </Form.Item>
+      {isEdit && (
+        <Form.Item name="username" label={t("usuarios.username")}>
+          <Input disabled />
+        </Form.Item>
+      )}
       <Form.Item name="email" label={t("usuarios.email")} rules={[{ required: true, type: "email" }]}>
         <Input placeholder="correo@ejemplo.com" />
       </Form.Item>
