@@ -41,30 +41,25 @@ const UsuariosForm = ({ usuario, onSuccess, onCancel, t }) => {
     setLoading(true);
     try {
       const { roleIds, ...userFields } = values;
-
       let userId = usuario?.id;
 
       if (isEdit) {
         await dispatch(updateUsuarioAction({ id: userId, changes: userFields })).unwrap();
         message.success(t("usuarios.update_success"));
       } else {
-        // Crear con contraseña temporal aleatoria — el usuario la establecerá con el enlace
         const tempPassword = Math.random().toString(36).slice(-12) + "Aa1!";
         const created = await dispatch(createUsuarioAction({ ...userFields, password: tempPassword })).unwrap();
         userId = created.id;
-
-        // Generar enlace de primer acceso automáticamente
-        const resetResult = await dispatch(generateResetTokenAction(userId)).unwrap();
-        setResetToken(resetResult.token);
-
-        message.success("Usuario creado. Comparte el enlace para que establezca su contraseña.");
+        // El backend ya envió el correo y devuelve el token por si acaso
+        setResetToken(created.resetToken);
+        message.success("Usuario creado. Se envió un correo con el enlace de acceso.");
       }
 
       if (roleIds !== undefined && userId) {
         await dispatch(assignRolesToUserAction({ userId, roleIds: roleIds || [] })).unwrap();
       }
 
-      if (!isEdit) return; // No cerrar modal — mostrar el enlace al admin
+      if (!isEdit) return; // Mantener modal abierto para mostrar el enlace de respaldo
       onSuccess();
     } catch (err) {
       message.error(err || (isEdit ? t("usuarios.update_error") : t("usuarios.create_error")));
@@ -132,7 +127,7 @@ const UsuariosForm = ({ usuario, onSuccess, onCancel, t }) => {
                   <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
                     {isEdit
                       ? "Comparte este enlace con el usuario (expira en 1 hora):"
-                      : "Usuario creado. Comparte este enlace para que establezca su contraseña:"}
+                      : "✅ Correo enviado. Enlace de respaldo (expira en 1 hora):"}
                   </Text>
                   <Space wrap>
                     <Text code style={{ fontSize: 11, wordBreak: "break-all" }}>{resetUrl}</Text>

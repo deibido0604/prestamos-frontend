@@ -13,6 +13,7 @@ const normalizeUser = (user) => ({
   active: user.active,
   roles: user.roles || [],
   fechaCreacion: user.created_at,
+  resetToken: user.resetToken || null,
 });
 
 export const fetchUsuariosAction = createAsyncThunk(
