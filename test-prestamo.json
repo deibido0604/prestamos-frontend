@@ -1,0 +1,8 @@
+{
+  "cliente_id": 7,
+  "monto": 1000,
+  "tasa_interes": 10,
+  "concepto": "Test alertas quincenal",
+  "fecha_inicio": "2026-06-28",
+  "frecuencia": "quincenal"
+}

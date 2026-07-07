@@ -16,6 +16,16 @@ const initialState = {
   testEmailSuccess: false,
 };
 
+const upsertLocal = (state, alerta) => {
+  if (!alerta) return;
+  const idx = state.list.findIndex((a) => a.id && alerta.id && a.id === alerta.id);
+  if (idx !== -1) {
+    state.list[idx] = { ...state.list[idx], ...alerta };
+  } else {
+    state.list.unshift(alerta);
+  }
+};
+
 const alertasSlice = createSlice({
   name: 'alertas',
   initialState,
@@ -25,6 +35,16 @@ const alertasSlice = createSlice({
     },
     clearTestStatus: (state) => {
       state.testEmailSuccess = false;
+    },
+    // Inserta o reemplaza alertas generadas localmente (al crear préstamo)
+    addAlertasLocal: (state, action) => {
+      const payload = Array.isArray(action.payload) ? action.payload : [action.payload];
+      payload.forEach((alerta) => upsertLocal(state, alerta));
+    },
+    markAlertaLeida: (state, action) => {
+      const id = action.payload;
+      const idx = state.list.findIndex((a) => a.id === id);
+      if (idx !== -1) state.list[idx] = { ...state.list[idx], leido: true };
     },
   },
   extraReducers: (builder) => {
@@ -113,7 +133,12 @@ const alertasSlice = createSlice({
 });
 
 // Exportar acciones síncronas
-export const { clearError, clearTestStatus } = alertasSlice.actions;
+export const {
+  clearError,
+  clearTestStatus,
+  addAlertasLocal,
+  markAlertaLeida,
+} = alertasSlice.actions;
 
 // Exportar el reducer por defecto
 export default alertasSlice.reducer;

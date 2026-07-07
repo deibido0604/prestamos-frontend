@@ -1,11 +1,14 @@
 import { GlobalOutlined, LogoutOutlined, BellOutlined } from "@ant-design/icons";
-import { Badge, Button, Layout, Popover, List, Typography } from "antd";
-import { useContext, useState, useEffect } from "react";
+import { Badge, Button, Layout, Popover, List, Typography, Empty, Tag } from "antd";
+import { useContext, useState, useEffect, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 import { AuthContext } from "../../../admin/context";
 import { setLocale } from "../../../config/store";
+import { fetchAlertas } from "../../../admin/modules/alertas/store/thunks";
+import { markAlertaLeida } from "../../../admin/modules/alertas/store/alertasSlice";
 import "./styles.scss";
 
 const { Header } = Layout;
@@ -16,31 +19,31 @@ export const HeaderComponent = () => {
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
 
-  const [alertas, setAlertas] = useState([]);
+  const alertas = useSelector((s) => s.alertas?.list || []);
+
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
-    // Fetch recent alertas from backend; fall back to empty list on error
-    const fetchAlertas = async () => {
-      try {
-        const base = (import.meta.env.VITE_API_URL) || "";
-        // API_BASE already contains /api-prestamos if configured, so call /alertas directly
-        const url = base ? `${base}/alertas` : `/api-prestamos/alertas`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("failed to fetch alertas");
-        const data = await res.json();
-        // expecting data as array (data.data or data)
-        const list = Array.isArray(data) ? data : data.data || [];
-        setAlertas(list);
-      } catch (err) {
-        setAlertas([]);
-        // console.error("Could not load alertas:", err);
-      }
-    };
-    fetchAlertas();
-  }, []);
+    dispatch(fetchAlertas()).catch(() => {});
+    const t = setInterval(() => {
+      dispatch(fetchAlertas()).catch(() => {});
+    }, 60_000);
+    return () => clearInterval(t);
+  }, [dispatch]);
 
-  const noLeidas = alertas.filter(a => !a.leido).length;
+  const recientes = useMemo(
+    () =>
+      [...alertas]
+        .sort((a, b) => {
+          const fa = a.fecha ? new Date(a.fecha).getTime() : 0;
+          const fb = b.fecha ? new Date(b.fecha).getTime() : 0;
+          return fb - fa;
+        })
+        .slice(0, 8),
+    [alertas]
+  );
+
+  const noLeidas = alertas.filter((a) => !a.leido).length;
 
   const handleLocale = (locale) => {
     localStorage.setItem("locale", locale);
@@ -56,28 +59,68 @@ export const HeaderComponent = () => {
     navigate("/main/alertas");
   };
 
+  const handleClickAlerta = (alerta) => {
+    if (!alerta?.leido) dispatch(markAlertaLeida(alerta.id));
+    setPopoverOpen(false);
+    if (alerta?.prestamo_id) {
+      navigate(`/main/prestamos`);
+    } else {
+      navigate("/main/alertas");
+    }
+  };
+
   const contentAlertas = (
-    <div style={{ width: 280 }}>
-      <List
-        size="small"
-        header={<strong>Alertas recientes</strong>}
-        footer={
-          <Button type="link" block onClick={handleVerTodas}>
-            Ver todas las alertas
-          </Button>
-        }
-        dataSource={alertas.slice(0, 5)}
-        renderItem={(item) => (
-          <List.Item>
-            <List.Item.Meta
-              title={<Text ellipsis style={{ maxWidth: 200 }}>{item.mensaje}</Text>}
-              description={item.fecha}
-            />
-            {!item.leido && <Badge status="processing" />}
-          </List.Item>
-        )}
-        locale={{ emptyText: "No hay alertas" }}
-      />
+    <div style={{ width: 300 }}>
+      <div style={{ padding: "8px 4px", borderBottom: "1px solid #f0f0f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Text strong>Alertas recientes</Text>
+        {noLeidas > 0 && <Badge count={noLeidas} />}
+      </div>
+      {recientes.length === 0 ? (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description="Sin alertas pendientes"
+          style={{ padding: "16px 0" }}
+        />
+      ) : (
+        <List
+          size="small"
+          dataSource={recientes}
+          renderItem={(item) => (
+            <List.Item
+              style={{ cursor: "pointer" }}
+              onClick={() => handleClickAlerta(item)}
+            >
+              <List.Item.Meta
+                title={
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <Text ellipsis style={{ maxWidth: 200 }}>
+                      {item.mensaje || item.nombre || "Alerta"}
+                    </Text>
+                    {!item.leido && <Badge status="processing" />}
+                  </div>
+                }
+                description={
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                    {item.frecuencia && (
+                      <Tag color="blue" style={{ margin: 0 }}>
+                        {item.frecuencia}
+                      </Tag>
+                    )}
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {item.fecha ? dayjs(item.fecha).format("DD/MM/YYYY") : "—"}
+                    </Text>
+                  </div>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      )}
+      <div style={{ borderTop: "1px solid #f0f0f0", padding: "8px 0 0" }}>
+        <Button type="link" block onClick={handleVerTodas}>
+          Ver todas las alertas
+        </Button>
+      </div>
     </div>
   );
 
@@ -108,7 +151,7 @@ export const HeaderComponent = () => {
             onOpenChange={setPopoverOpen}
           >
             <Badge count={noLeidas} offset={[-5, 5]}>
-              <Button icon={<BellOutlined />} />
+              <Button icon={<BellOutlined />} aria-label="Notificaciones" />
             </Badge>
           </Popover>
 

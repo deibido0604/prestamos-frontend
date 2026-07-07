@@ -1,8 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { endpoints } from '@utils';
+import { alertasUrl } from '@utils/endpoints';
+import dayjs from 'dayjs';
+import { markAlertaLeida } from './alertasSlice';
 
-const API_URL = endpoints.API_BASE || '';
+const API_URL = (alertasUrl.list || '').replace(/\/alertas\/?$/, '');
 
 export const fetchAlertas = createAsyncThunk(
   'alertas/fetchAll',
@@ -75,3 +77,31 @@ export const sendTestEmail = createAsyncThunk(
     }
   }
 );
+
+// Marca como leídas las alertas generadas por un préstamo cuya fecha ya pasó.
+// Devuelve un array de IDs para que el consumidor los pueda despachar.
+export const markAlertaLeidaAuto = createAsyncThunk(
+  'alertas/markLeidaAuto',
+  async (prestamoId, { getState }) => {
+    if (!prestamoId) return [];
+    const state = getState();
+    const hoy = dayjs().startOf('day');
+    const ids = (state.alertas?.list || [])
+      .filter(
+        (a) =>
+          a.prestamo_id === prestamoId &&
+          !a.leido &&
+          a.fecha &&
+          dayjs(a.fecha).isValid() &&
+          dayjs(a.fecha).startOf('day').isSame(hoy) ||
+          dayjs(a.fecha).startOf('day').isBefore(hoy)
+      )
+      .map((a) => a.id);
+    return ids;
+  }
+);
+
+// Helper para que el componente despache markAlertaLeida por cada id devuelto.
+export const despacharMarcarLeidas = (ids) => (dispatch) => {
+  (ids || []).forEach((id) => dispatch(markAlertaLeida(id)));
+};

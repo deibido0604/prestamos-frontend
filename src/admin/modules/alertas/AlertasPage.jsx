@@ -185,16 +185,22 @@ const AlertasPage = () => {
       title: "Destinatarios",
       dataIndex: "destinatarios",
       key: "destinatarios",
-      render: (emails) => (
-        <Space direction="vertical" size="small">
-          {emails.slice(0, isMobile ? 1 : 2).map((email, idx) => (
-            <Tag key={idx} icon={<MailOutlined />} color="geekblue">
-              {isMobile ? (email.substring(0, 15) + (email.length > 15 ? "..." : "")) : email}
-            </Tag>
-          ))}
-          {emails.length > (isMobile ? 1 : 2) && <Tag>+{emails.length - (isMobile ? 1 : 2)}</Tag>}
-        </Space>
-      ),
+      render: (emails) => {
+        // Las alertas generadas desde préstamos no tienen destinatarios;
+        // mostramos un placeholder para no romper la tabla.
+        const lista = Array.isArray(emails) ? emails : [];
+        if (lista.length === 0) return <span style={{ color: "#bbb" }}>—</span>;
+        return (
+          <Space direction="vertical" size="small">
+            {lista.slice(0, isMobile ? 1 : 2).map((email, idx) => (
+              <Tag key={idx} icon={<MailOutlined />} color="geekblue">
+                {isMobile ? (email.substring(0, 15) + (email.length > 15 ? "..." : "")) : email}
+              </Tag>
+            ))}
+            {lista.length > (isMobile ? 1 : 2) && <Tag>+{lista.length - (isMobile ? 1 : 2)}</Tag>}
+          </Space>
+        );
+      },
       hidden: isMobile,
     },
     {
